@@ -28,6 +28,7 @@ from websockets.http11 import Response
 log = logging.getLogger("deskhub.mobile_web")
 
 STATIC_DIR = pathlib.Path(__file__).resolve().parent / "static"
+FONTS_DIR = pathlib.Path(__file__).resolve().parent.parent / "firmware" / "main" / "fonts"
 IGNORED_TYPES = {"ai", "claude", "alert"}
 ALLOWED_CLIENT_CMDS = {"media", "shortcut", "speedtest", "steam_launch"}
 WEATHER_REFRESH_S = 15 * 60
@@ -43,6 +44,7 @@ CONTENT_TYPES = {
     ".svg": "image/svg+xml; charset=utf-8",
     ".png": "image/png",
     ".ico": "image/x-icon",
+    ".ttf": "font/ttf",
 }
 
 
@@ -129,9 +131,16 @@ class MobileBridge:
         if path in ("/ws", "/client"):
             return None
 
-        rel = "index.html" if path == "/" else path.lstrip("/")
-        target = (self.static_dir / rel).resolve()
-        if not target.is_relative_to(self.static_dir) or not target.is_file():
+        if path.startswith("/fonts/"):
+            rel = path[len("/fonts/"):]
+            base = FONTS_DIR.resolve()
+            target = (base / rel).resolve()
+        else:
+            rel = "index.html" if path == "/" else path.lstrip("/")
+            base = self.static_dir
+            target = (base / rel).resolve()
+
+        if not target.is_relative_to(base) or not target.is_file():
             return _http_response(404, "Not Found", b"Not Found", "text/plain; charset=utf-8")
 
         ext = target.suffix.lower()

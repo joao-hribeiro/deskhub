@@ -1,78 +1,95 @@
 (() => {
   "use strict";
 
+  // Material Icons codepoints matching firmware/main/icons.h
+  const MI = {
+    home: "\ue88a",
+    insights: "\uf092",
+    memory: "\ue322",
+    speed: "\ue9e4",
+    music_note: "\ue405",
+    event: "\ue878",
+    calendar_today: "\ue935",
+    wb_sunny: "\ue430",
+    cloud: "\ue2bd",
+    wb_cloudy: "\ue42d",
+    grain: "\ue3ea",
+    umbrella: "\uf1ad",
+    ac_unit: "\ueb3b",
+    thunderstorm: "\uebdb",
+    foggy: "\ue818",
+    nights_stay: "\uea46",
+    grid_view: "\ue9b0",
+    apps: "\ue5c3",
+    wifi: "\ue63e",
+    wifi_off: "\ue648",
+    computer: "\ue30a",
+    desktop_windows: "\ue30c",
+    play_arrow: "\ue037",
+    pause: "\ue034",
+    skip_next: "\ue044",
+    skip_previous: "\ue045",
+    arrow_upward: "\ue5d8",
+    arrow_downward: "\ue5db",
+    timer: "\ue425",
+    replay: "\ue042",
+    sports_esports: "\uea28",
+    public: "\ue80b",
+    volume_up: "\ue050",
+    volume_down: "\ue04d",
+    volume_off: "\ue04f",
+    mic: "\ue029",
+    mic_off: "\ue02b",
+    lock: "\ue897",
+    photo_camera: "\ue412",
+    screenshot_monitor: "\uec08",
+    terminal: "\ueb8e",
+    code: "\ue86f",
+    folder: "\ue2c7",
+    keyboard: "\ue312",
+    power_settings_new: "\ue8ac",
+    schedule: "\ue8b5",
+    mail: "\ue158",
+    chat: "\ue0b7",
+    rocket_launch: "\ueb9b",
+    bolt: "\uea0b",
+    star: "\ue838",
+    favorite: "\ue87d",
+    settings: "\ue8b8",
+    refresh: "\ue5d5",
+    dark_mode: "\ue51c",
+    headphones: "\uf01f",
+    videocam: "\ue04b",
+    movie: "\ue02c",
+    developer_board: "\ue30d",
+    lan: "\ueb2f",
+    shuffle: "\ue043",
+    repeat: "\ue040",
+    fullscreen: "\ue5d0",
+    fullscreen_exit: "\ue5d1",
+  };
+
   const PAGE_META = {
     home: { title: "Home", icon: "home" },
     stats: { title: "PC Stats", icon: "insights" },
-    media: { title: "Mídia", icon: "music_note" },
-    shortcuts: { title: "Atalhos", icon: "grid_view" },
+    calendar: { title: "Agenda", icon: "event" },
     weather: { title: "Clima", icon: "wb_sunny" },
-    calendar: { title: "Agenda", icon: "calendar_today" },
-    network: { title: "Internet", icon: "wifi" },
-    games: { title: "Jogos", icon: "sports_esports" },
+    media: { title: "Mídia", icon: "music_note" },
     timer: { title: "Timer", icon: "timer" },
+    games: { title: "Jogos", icon: "sports_esports" },
+    shortcuts: { title: "Atalhos", icon: "grid_view" },
   };
 
-  // Inline SVG paths (24x24 viewBox) so everything renders offline with 0 CDN requests.
-  const ICONS = {
-    spotify: "M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.627.627 0 0 1-.86.208c-2.355-1.439-5.32-1.764-8.812-.966a.625.625 0 1 1-.278-1.22c3.821-.873 7.098-.506 9.742 1.118a.626.626 0 0 1 .208.86zm1.224-2.721a.784.784 0 0 1-1.077.259c-2.696-1.657-6.805-2.137-9.993-1.169a.784.784 0 1 1-.456-1.5c3.64-1.106 8.18-.574 11.267 1.332a.784.784 0 0 1 .259 1.078zm.106-2.833C14.686 8.948 9.38 8.77 6.302 9.704a.94.94 0 1 1-.55-1.8c3.535-1.073 9.399-.867 13.14 1.355a.942.942 0 0 1-.976 1.61z",
-    home: "M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z",
-    insights: "M21 8c-1.45 0-2.26 1.44-1.93 2.51l-3.55 3.56c-.3-.09-.74-.09-1.04 0l-2.55-2.55C12.27 10.45 11.46 9 10 9c-1.45 0-2.27 1.44-1.93 2.52l-4.56 4.55C2.44 15.74 1 16.55 1 18c0 1.1.9 2 2 2 1.45 0 2.26-1.44 1.93-2.51l4.55-4.56c.3.09.74.09 1.04 0l2.55 2.55C12.73 16.55 13.54 18 15 18c1.45 0 2.27-1.44 1.93-2.52l3.56-3.55c1.07.33 2.51-.48 2.51-1.93 0-1.1-.9-2-2-2z",
-    memory: "M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z",
-    speed: "M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z",
-    music_note: "M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z",
-    event: "M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z",
-    calendar_today: "M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z",
-    wb_sunny: "M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79 1.42-1.41zM4 10.5H1v2h3v-2zm9-9.95h-2V3.5h2V.55zm7.45 3.91l-1.41-1.41-1.79 1.79 1.41 1.41 1.79-1.79zm-3.21 13.7l1.79 1.8 1.41-1.41-1.8-1.79-1.4 1.4zM20 10.5v2h3v-2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm-1 16.95h2V19.5h-2v2.95zm-7.45-3.91l1.41 1.41 1.79-1.8-1.41-1.41-1.79 1.8z",
-    cloud: "M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z",
-    grid_view: "M3 3v8h8V3H3zm6 6H5V5h4v4zm-6 4v8h8v-8H3zm6 6H5v-4h4v4zm4-16v8h8V3h-8zm6 6h-4V5h4v4zm-6 4v8h8v-8h-8zm6 6h-4v-4h4v4z",
-    apps: "M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z",
-    wifi: "M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 0 0-6 0zm-4-4l2 2a7.074 7.074 0 0 1 10 0l2-2C15.14 9.14 8.87 9.14 5 13z",
-    computer: "M20 18c1.1 0 1.99-.9 1.99-2L22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2H0v2h24v-2h-4zM4 6h16v10H4V6z",
-    desktop_windows: "M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z",
-    play_arrow: "M8 5v14l11-7z",
-    pause: "M6 19h4V5H6v14zm8-14v14h4V5h-4z",
-    skip_next: "M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z",
-    skip_previous: "M6 6h2v12H6zm3.5 6l8.5 6V6z",
-    volume_up: "M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z",
-    volume_down: "M18.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM5 9v6h4l5 5V4L9 9H5z",
-    volume_off: "M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z",
-    mic: "M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z",
-    mic_off: "M19 11h-1.7c0 .74-.16 1.43-.43 2.05l1.23 1.23c.56-.98.9-2.09.9-3.28zm-4.02.17c0-.06.02-.11.02-.17V5c0-1.66-1.34-3-3-3S9 3.34 9 5v.18l5.98 5.99zM4.27 3L3 4.27l6.01 6.01V11c0 1.66 1.33 3 2.99 3 .22 0 .44-.03.65-.08l1.66 1.66c-.71.33-1.5.52-2.31.52-2.76 0-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c.91-.13 1.77-.45 2.54-.9L19.73 21 21 19.73 4.27 3z",
-    lock: "M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z",
-    photo_camera: "M9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z",
-    screenshot_monitor: "M20 3H4c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h4v2h8v-2h4c1.1 0 2-.9 2-2V5c0-1.11-.9-2-2-2zm0 14H4V5h16v12zM6.5 7.5H9V6H5v4h1.5V7.5zM19 12h-1.5v2.5H15V16h4v-4z",
-    terminal: "M20 4H4c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 14H4V8h16v10zm-2-1h-6v-2h6v2zM7.5 17l-1.41-1.41L8.67 13l-2.59-2.59L7.5 9l4 4-4 4z",
-    code: "M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z",
-    public: "M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z",
-    folder: "M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z",
-    keyboard: "M20 5H4c-1.1 0-1.99.9-1.99 2L2 17c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-9 3h2v2h-2V8zm0 3h2v2h-2v-2zM8 8h2v2H8V8zm0 3h2v2H8v-2zm-1 2H5v-2h2v2zm0-3H5V8h2v2zm9 7H8v-2h8v2zm0-4h-2v-2h2v2zm0-3h-2V8h2v2zm3 3h-2v-2h2v2zm0-3h-2V8h2v2z",
-    power_settings_new: "M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z",
-    schedule: "M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z",
-    timer: "M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61l1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42C16.07 4.74 14.12 4 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z",
-    mail: "M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z",
-    chat: "M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z",
-    sports_esports: "M21.58 16.09l-1.09-7.66C20.21 6.46 18.52 5 16.53 5H7.47C5.48 5 3.79 6.46 3.51 8.43l-1.09 7.66C2.2 17.63 3.39 19 4.94 19c.68 0 1.32-.27 1.8-.75L9 16h6l2.25 2.25c.48.48 1.13.75 1.8.75 1.56 0 2.75-1.37 2.53-2.91zM11 11H9v2H8v-2H6v-1h2V8h1v2h2v1zm4-1c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm2 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z",
-    rocket_launch: "M9.19 6.35c-2.04 2.29-3.44 5.58-3.57 5.89L2 10.69l4.05-4.05c.47-.47 1.15-.68 1.81-.55l1.33.26zM11.17 17s3.74-1.55 5.89-3.7c5.4-5.4 4.5-9.62 4.21-10.57-.95-.3-5.17-1.19-10.57 4.21C8.55 9.09 7 12.83 7 12.83L11.17 17zm6.48-2.19c-2.29 2.04-5.58 3.44-5.89 3.57L13.31 22l4.05-4.05c.47-.47.68-1.15.55-1.81l-.26-1.33zM9 18c0 .83-.34 1.58-.88 2.12C6.94 21.3 2 22 2 22s.7-4.94 1.88-6.12C4.42 15.34 5.17 15 6 15c1.66 0 3 1.34 3 3z",
-    bolt: "M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z",
-    star: "M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z",
-    favorite: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z",
-    settings: "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z",
-    refresh: "M17.65 6.35A7.958 7.958 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z",
-    dark_mode: "M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z",
-    headphones: "M12 3a9 9 0 0 0-9 9v7c0 1.1.9 2 2 2h4v-8H5v-1c0-3.87 3.13-7 7-7s7 3.13 7 7v1h-4v8h4c1.1 0 2-.9 2-2v-7a9 9 0 0 0-9-9z",
-    videocam: "M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z",
-    movie: "M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z",
-    developer_board: "M22 9V7h-2V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2v-2h-2V9h2zm-4 10H4V5h14v14zM6 13h5v4H6zm6-6h4v3h-4zM6 7h5v5H6zm6 4h4v6h-4z",
-    lan: "M13 22h8v-7h-3v-4h-5V9h3V2H8v7h3v2H6v4H3v7h8v-7H8v-2h8v2h-3v7z",
-    shuffle: "M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z",
-    repeat: "M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z",
-    fullscreen: "M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z",
-  };
+  const SPOTIFY_PATH =
+    "M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.627.627 0 0 1-.86.208c-2.355-1.439-5.32-1.764-8.812-.966a.625.625 0 1 1-.278-1.22c3.821-.873 7.098-.506 9.742 1.118a.626.626 0 0 1 .208.86zm1.224-2.721a.784.784 0 0 1-1.077.259c-2.696-1.657-6.805-2.137-9.993-1.169a.784.784 0 1 1-.456-1.5c3.64-1.106 8.18-.574 11.267 1.332a.784.784 0 0 1 .259 1.078zm.106-2.833C14.686 8.948 9.38 8.77 6.302 9.704a.94.94 0 1 1-.55-1.8c3.535-1.073 9.399-.867 13.14 1.355a.942.942 0 0 1-.976 1.61z";
 
-  function iconSvg(name) {
-    const d = ICONS[name] || ICONS.apps;
-    return `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${d}"/></svg>`;
+  function spotifySvg() {
+    return `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="${SPOTIFY_PATH}"/></svg>`;
+  }
+
+  function iconMi(name, cls = "") {
+    const glyph = MI[name] || MI.apps;
+    return `<span class="mi${cls ? ` ${cls}` : ""}" aria-hidden="true">${glyph}</span>`;
   }
 
   function esc(str) {
@@ -84,23 +101,25 @@
       .replaceAll("'", "&#39;");
   }
 
-  function fmtTime(sec) {
-    sec = Math.max(0, Math.floor(sec || 0));
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${m}:${String(s).padStart(2, "0")}`;
+  function fmtDuration(s) {
+    s = Math.max(0, Math.floor(s || 0));
+    if (s >= 3600) {
+      const h = Math.floor(s / 3600);
+      const m = Math.floor((s % 3600) / 60);
+      const sec = s % 60;
+      return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+    }
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${String(sec).padStart(2, "0")}`;
   }
 
   function fmtBytes(b) {
-    if (!b || b < 1024) return `${b || 0} B`;
-    const units = ["KB", "MB", "GB", "TB"];
-    let v = b / 1024;
-    let i = 0;
-    while (v >= 1024 && i < units.length - 1) {
-      v /= 1024;
-      i++;
-    }
-    return `${v.toFixed(v >= 100 ? 0 : 1)} ${units[i]}`;
+    if (b == null) return "--";
+    if (b >= 1e12) return `${(b / 1e12).toFixed(2)} TB`;
+    if (b >= 1e9) return `${(b / 1e9).toFixed(1)} GB`;
+    if (b >= 1e6) return `${Math.round(b / 1e6)} MB`;
+    return `${Math.round(b / 1e3)} KB`;
   }
 
   function fmtRate(kbps) {
@@ -109,23 +128,99 @@
     return `${Math.round(kbps)} KB/s`;
   }
 
-  function wmoText(code) {
-    if (code === 0) return "Céu limpo";
-    if (code <= 3) return "Parcialmente nublado";
-    if (code === 45 || code === 48) return "Nevoeiro";
-    if (code >= 51 && code <= 57) return "Garoa";
-    if (code >= 61 && code <= 67) return "Chuva";
-    if (code >= 71 && code <= 77) return "Neve";
-    if (code >= 80 && code <= 82) return "Pancadas de chuva";
-    if (code >= 95) return "Tempestade";
-    return "Nublado";
+  function fmtAgo(unixSec) {
+    if (!unixSec || unixSec <= 0) return "nunca";
+    const d = Math.max(0, Math.floor(Date.now() / 1000 - unixSec));
+    if (d < 60) return "agora";
+    if (d < 3600) return `há ${Math.floor(d / 60)}m`;
+    if (d < 86400) return `há ${Math.floor(d / 3600)}h`;
+    return `há ${Math.floor(d / 86400)}d`;
+  }
+
+  function fmtDurShort(sec) {
+    sec = Math.max(0, Math.floor(sec || 0));
+    if (sec >= 86400) return `${Math.floor(sec / 86400)}d ${Math.floor((sec % 86400) / 3600)}h`;
+    if (sec >= 3600) return `${Math.floor(sec / 3600)}h ${String(Math.floor((sec % 3600) / 60)).padStart(2, "0")}m`;
+    if (sec >= 60) return `${Math.floor(sec / 60)}m`;
+    return `${sec}s`;
+  }
+
+  function fmtPlaytime(minutes) {
+    if (minutes >= 600) return `${Math.floor(minutes / 60)} h`;
+    if (minutes >= 60) return `${(minutes / 60).toFixed(1)} h`;
+    return `${minutes} min`;
+  }
+
+  function fmtGameAgo(unixSec) {
+    if (!unixSec || unixSec <= 0) return "";
+    const d = Math.max(0, Math.floor(Date.now() / 1000 - unixSec));
+    if (d < 3600) return "Agora há pouco";
+    if (d < 86400) return `há ${Math.floor(d / 3600)}h`;
+    if (d < 2 * 86400) return "Ontem";
+    if (d < 60 * 86400) return `há ${Math.floor(d / 86400)} dias`;
+    return `há ${Math.floor(d / (30 * 86400))} meses`;
+  }
+
+  function weatherIcon(code, isDay) {
+    if (code === 0) return isDay ? "wb_sunny" : "nights_stay";
+    if (code <= 2) return isDay ? "wb_cloudy" : "nights_stay";
+    if (code === 3) return "cloud";
+    if (code === 45 || code === 48) return "foggy";
+    if (code >= 51 && code <= 57) return "grain";
+    if ((code >= 61 && code <= 67) || (code >= 80 && code <= 82)) return "umbrella";
+    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "ac_unit";
+    if (code >= 95) return "thunderstorm";
+    return "cloud";
+  }
+
+  function weatherColor(code, isDay) {
+    if (code <= 1) return isDay ? "#fbbf5a" : "#c08cff";
+    if (code === 2) return isDay ? "#fcd38d" : "#a9b4ff";
+    if (code === 3 || code === 45 || code === 48) return "#aeb7e0";
+    if ((code >= 71 && code <= 77) || code === 85 || code === 86) return "#e6f0ff";
+    if (code >= 95) return "#c08cff";
+    return "#67e8f9";
+  }
+
+  function weatherText(code) {
+    switch (code) {
+      case 0: return "Céu limpo";
+      case 1: return "Predom. limpo";
+      case 2: return "Parcial. nublado";
+      case 3: return "Nublado";
+      case 45: case 48: return "Nevoeiro";
+      case 51: case 53: case 55: return "Garoa";
+      case 56: case 57: return "Garoa congelante";
+      case 61: return "Chuva fraca";
+      case 63: return "Chuva";
+      case 65: return "Chuva forte";
+      case 66: case 67: return "Chuva congelante";
+      case 71: return "Neve fraca";
+      case 73: return "Neve";
+      case 75: return "Neve forte";
+      case 77: return "Grãos de neve";
+      case 80: case 81: return "Pancadas";
+      case 82: return "Pancadas fortes";
+      case 85: case 86: return "Neve esparsa";
+      case 95: return "Tempestade";
+      case 96: case 99: return "Tempestade/granizo";
+      default: return "Nublado";
+    }
+  }
+
+  function sameLocalDay(a, b) {
+    return a.getFullYear() === b.getFullYear() &&
+           a.getMonth() === b.getMonth() &&
+           a.getDate() === b.getDate();
   }
 
   const state = {
     wsConnected: false,
     pcOnline: false,
     activePage: "home",
-    pages: ["home", "stats", "media", "shortcuts", "weather", "calendar", "network", "timer"],
+    statsView: "pc", // "pc" | "internet"
+    netEnabled: true,
+    pages: ["home", "stats", "calendar", "weather", "media", "timer", "shortcuts"],
     layout: null,
     home: null,
     stats: null,
@@ -141,24 +236,24 @@
     weather: null,
     net: null,
     steam: null,
+    steamUpdatedAt: 0,
     steamImgs: {},
     pcAsleep: false,
     wakeOverrideUntil: 0,
+    saverLastMin: -1,
     timer: {
-      totalSec: 5 * 60,
-      remainSec: 5 * 60,
-      running: false,
+      totalSec: 25 * 60,
+      remainSec: 25 * 60,
+      state: "idle", // "idle" | "running" | "paused"
       lastTick: 0,
     },
   };
 
   const els = {
+    app: document.getElementById("app"),
     navItems: document.getElementById("nav-items"),
-    statusDot: document.getElementById("status-dot"),
-    hdrTime: document.getElementById("hdr-time"),
-    hdrDate: document.getElementById("hdr-date"),
-    hdrPageTitle: document.getElementById("hdr-page-title"),
-    hdrPcBadge: document.getElementById("hdr-pc-badge"),
+    statusPc: document.getElementById("status-pc"),
+    statusWifi: document.getElementById("status-wifi"),
     pageContainer: document.getElementById("page-container"),
     btnFullscreen: document.getElementById("btn-fullscreen"),
     sleepOverlay: document.getElementById("sleep-overlay"),
@@ -166,15 +261,11 @@
     sleepTime: document.getElementById("sleep-time"),
     sleepDate: document.getElementById("sleep-date"),
     timerAlarm: document.getElementById("timer-alarm"),
+    alarmSub: document.getElementById("alarm-sub"),
+    btnAlarmAgain: document.getElementById("btn-alarm-again"),
     btnAlarmOk: document.getElementById("btn-alarm-ok"),
   };
 
-  // Inject static utility icons
-  document.querySelectorAll("[data-icon]").forEach((el) => {
-    el.innerHTML = iconSvg(el.dataset.icon);
-  });
-
-  // Create page DOM containers once
   const pageEls = {};
   for (const key of Object.keys(PAGE_META)) {
     const sec = document.createElement("div");
@@ -194,31 +285,66 @@
   }
 
   function updateStatusUi() {
-    if (!state.wsConnected) {
-      els.statusDot.className = "status-dot offline";
-      els.hdrPcBadge.className = "badge badge-offline";
-      els.hdrPcBadge.textContent = "Desconectado";
-    } else if (!state.pcOnline) {
-      els.statusDot.className = "status-dot warn";
-      els.hdrPcBadge.className = "badge badge-warn";
-      els.hdrPcBadge.textContent = "PC offline";
-    } else {
-      els.statusDot.className = "status-dot online";
-      els.hdrPcBadge.className = "badge badge-online";
-      els.hdrPcBadge.textContent = "PC online";
+    els.statusPc.className = `mi status-ico ${state.pcOnline ? "good" : "dim"}`;
+    els.statusPc.title = state.pcOnline ? "PC online" : "PC offline";
+
+    els.statusWifi.textContent = state.wsConnected ? MI.wifi : MI.wifi_off;
+    els.statusWifi.className = `mi status-ico ${state.wsConnected ? "good" : "bad"}`;
+    els.statusWifi.title = state.wsConnected ? "Conectado ao servidor" : "Desconectado";
+  }
+
+  function homeGridItems() {
+    const defaultGrid = [
+      { widget: "stats", x: 0, y: 0, w: 3, h: 1 },
+      { widget: "events", x: 0, y: 1, w: 3, h: 2 },
+      { widget: "weather", x: 3, y: 0, w: 2, h: 1 },
+      { widget: "media", x: 3, y: 1, w: 2, h: 1 },
+      { widget: "net", x: 3, y: 2, w: 2, h: 1 },
+    ];
+    return (state.home?.grid || defaultGrid).filter(
+      (g) => g.widget !== "claude" && g.widget !== "ai"
+    );
+  }
+
+  function homeShowsEvents() {
+    return homeGridItems().some((g) => g.widget === "events");
+  }
+
+  function calendarBadgeColor() {
+    if (!state.pages.includes("calendar") || homeShowsEvents()) return null;
+    const now = new Date();
+    const nowSec = now.getTime() / 1000;
+    const dayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59).getTime() / 1000;
+    for (const ev of state.events) {
+      if (ev.end <= nowSec) continue;
+      if (ev.start <= dayEnd) return ev.color || "var(--accent)";
+      break;
     }
+    return null;
   }
 
   function computeVisiblePages() {
-    let list = state.layout?.pages
-      ? state.layout.pages.filter((p) => p in PAGE_META)
-      : ["home", "stats", "media", "weather", "calendar", "timer", "network", "shortcuts"];
+    const raw = state.layout?.pages;
+    state.netEnabled = raw ? raw.includes("network") : true;
+    if (!state.netEnabled && state.statsView === "internet") {
+      state.statsView = "pc";
+    }
+
+    let list = raw
+      ? raw.filter((p) => p in PAGE_META)
+      : ["home", "stats", "calendar", "weather", "media", "timer", "games", "shortcuts"];
 
     if (!list.includes("home")) list.unshift("home");
     if (list.includes("games")) {
       const hasGames = state.steam && (state.steam.found || state.steam.playing || (state.steam.recent || []).length > 0);
       if (!hasGames) list = list.filter((p) => p !== "games");
     }
+
+    // Firmware keeps Shortcuts last in the rail.
+    if (list.includes("shortcuts")) {
+      list = [...list.filter((p) => p !== "shortcuts"), "shortcuts"];
+    }
+
     state.pages = list;
     if (!state.pages.includes(state.activePage)) {
       state.activePage = "home";
@@ -227,21 +353,20 @@
 
   function renderNav() {
     computeVisiblePages();
+    const calDot = calendarBadgeColor();
+    const timerText = state.timer.state !== "idle" ? fmtDuration(state.timer.remainSec) : null;
+
     els.navItems.innerHTML = state.pages
       .map((p) => {
         const meta = PAGE_META[p];
         const active = p === state.activePage ? "active" : "";
-        let badge = "";
-        if (p === "timer" && (state.timer.running || state.timer.remainSec !== state.timer.totalSec)) {
-          badge = `<span class="nav-badge">${fmtTime(state.timer.remainSec)}</span>`;
-        }
-        return `<button class="nav-btn ${active}" data-page="${p}" type="button" title="${esc(meta.title)}">
-          <span class="nav-ico">${iconSvg(meta.icon)}</span>${badge}
-        </button>`;
+        const dot = p === "calendar" && calDot ? `<span class="nav-dot" style="background:${esc(calDot)}"></span>` : "";
+        const content = p === "timer" && timerText ? esc(timerText) : iconMi(meta.icon);
+        const hasText = p === "timer" && timerText ? " has-text" : "";
+        return `<button class="nav-btn ${active}${hasText}" data-page="${p}" type="button" title="${esc(meta.title)}">${content}${dot}</button>`;
       })
       .join("");
 
-    els.hdrPageTitle.textContent = PAGE_META[state.activePage]?.title || "Home";
     for (const [key, el] of Object.entries(pageEls)) {
       el.classList.toggle("active", key === state.activePage);
     }
@@ -254,13 +379,18 @@
   });
 
   function switchPage(page) {
+    if (page === "network") {
+      if (!state.netEnabled) return;
+      state.statsView = "internet";
+      page = "stats";
+    }
     if (!PAGE_META[page]) return;
     state.activePage = page;
     renderNav();
     renderActivePage();
   }
 
-  // ---- Clock & Night / Sleep Mode ----
+  // ---- Clock, Night / Sleep Saver & Live Ticks ----
   function checkNightMode() {
     const lay = state.layout;
     if (!lay || lay.night_start == null || lay.night_end == null || lay.night_start < 0 || lay.night_end < 0) {
@@ -271,6 +401,18 @@
     const s = lay.night_start;
     const e = lay.night_end;
     return s < e ? mins >= s && mins < e : mins >= s || mins < e;
+  }
+
+  function placeSleepBox() {
+    const box = els.sleepClockBox;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = box.offsetWidth || 260;
+    const bh = box.offsetHeight || 110;
+    const roomX = Math.max(0, vw - 40 - bw);
+    const roomY = Math.max(0, vh - 40 - bh);
+    box.style.left = `${20 + Math.floor(Math.random() * (roomX + 1))}px`;
+    box.style.top = `${20 + Math.floor(Math.random() * (roomY + 1))}px`;
   }
 
   function updateSleepOverlay() {
@@ -286,54 +428,24 @@
     const shouldSleep = (state.pcAsleep && sleepMode !== "none") || night;
     if (!shouldSleep) {
       els.sleepOverlay.classList.add("hidden");
+      state.saverLastMin = -1;
       return;
     }
     const style = night ? nightStyle : sleepMode;
     els.sleepClockBox.classList.toggle("off", style === "off");
+    const wasHidden = els.sleepOverlay.classList.contains("hidden");
     els.sleepOverlay.classList.remove("hidden");
+    const curMin = new Date().getMinutes();
+    if (wasHidden || curMin !== state.saverLastMin) {
+      state.saverLastMin = curMin;
+      placeSleepBox();
+    }
   }
 
   els.sleepOverlay.addEventListener("click", () => {
     state.wakeOverrideUntil = Date.now() + 60_000;
     updateSleepOverlay();
   });
-
-  function tickClock() {
-    const now = new Date();
-    const hhmm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-    const dateStr = now.toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit", month: "short" });
-    els.hdrTime.textContent = hhmm;
-    els.hdrDate.textContent = dateStr;
-    els.sleepTime.textContent = hhmm;
-    els.sleepDate.textContent = dateStr;
-    updateSleepOverlay();
-
-    // Update running media timeline smoothly every second
-    if (state.media?.active && state.media.playing && state.activePage === "media") {
-      const slider = pageEls.media.querySelector("#media-seek");
-      const posLbl = pageEls.media.querySelector("#media-pos");
-      if (slider && posLbl) {
-        const cur = currentMediaPos();
-        posLbl.textContent = fmtTime(cur);
-        if (!slider.matches(":active")) slider.value = Math.floor(cur);
-      }
-    }
-
-    // Update Timer
-    if (state.timer.running) {
-      const elapsed = Math.floor((Date.now() - state.timer.lastTick) / 1000);
-      if (elapsed >= 1) {
-        state.timer.lastTick += elapsed * 1000;
-        state.timer.remainSec = Math.max(0, state.timer.remainSec - elapsed);
-        if (state.timer.remainSec === 0) {
-          state.timer.running = false;
-          triggerAlarm();
-        }
-        renderNav();
-        if (state.activePage === "timer") renderTimer();
-      }
-    }
-  }
 
   function currentMediaPos() {
     if (!state.media) return 0;
@@ -345,7 +457,176 @@
     return dur > 0 ? Math.min(pos, dur) : pos;
   }
 
-  // ---- Renderers ----
+  function currentGameSessionSec() {
+    const p = state.steam?.playing;
+    if (!p) return 0;
+    const extra = state.steamUpdatedAt ? Math.floor((Date.now() - state.steamUpdatedAt) / 1000) : 0;
+    return Number(p.session_s || 0) + Math.max(0, extra);
+  }
+
+  function updateTimerDisplayInPlace() {
+    const t = state.timer;
+    const timeEl = pageEls.timer.querySelector("#timer-disp");
+    const statusEl = pageEls.timer.querySelector("#timer-stat");
+    const arcEl = pageEls.timer.querySelector("#timer-arc-ind");
+    if (!timeEl || !arcEl) {
+      renderTimer();
+      return;
+    }
+    timeEl.textContent = fmtDuration(t.remainSec);
+    if (statusEl) {
+      statusEl.textContent = t.state === "running" ? "Rodando" : t.state === "paused" ? "Pausado" : "Pronto";
+    }
+    const C = 2 * Math.PI * 134;
+    const frac = t.totalSec > 0 ? Math.max(0, Math.min(1, t.remainSec / t.totalSec)) : 0;
+    arcEl.setAttribute("stroke-dasharray", `${(frac * C).toFixed(2)} ${C.toFixed(2)}`);
+    arcEl.style.strokeOpacity = frac > 0 ? "1" : "0";
+  }
+
+  function tickClock() {
+    const now = new Date();
+    const hhmm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const fullDate = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+
+    els.sleepTime.textContent = hhmm;
+    els.sleepDate.textContent = fullDate;
+    updateSleepOverlay();
+
+    if (state.activePage === "home") {
+      const hdrTime = pageEls.home.querySelector("#home-hdr-time");
+      const hdrDate = pageEls.home.querySelector("#home-hdr-date");
+      if (hdrTime) hdrTime.textContent = hhmm;
+      if (hdrDate) hdrDate.textContent = fullDate;
+      const clkTime = pageEls.home.querySelector("#w-clock-time");
+      const clkDate = pageEls.home.querySelector("#w-clock-date");
+      if (clkTime) clkTime.textContent = hhmm;
+      if (clkDate) clkDate.textContent = fullDate;
+    }
+
+    if (state.media?.active && state.media.playing && state.activePage === "media") {
+      const slider = pageEls.media.querySelector("#media-seek");
+      const posLbl = pageEls.media.querySelector("#media-pos");
+      if (slider && posLbl) {
+        const cur = currentMediaPos();
+        const dur = Math.max(Number(state.media.dur || 0), 1);
+        posLbl.textContent = fmtDuration(cur);
+        if (!slider.matches(":active")) {
+          slider.value = Math.floor(cur);
+          slider.style.setProperty("--seek-pct", `${Math.min(100, (cur / dur) * 100).toFixed(1)}%`);
+        }
+      }
+    }
+
+    if (state.steam?.playing && state.activePage === "games") {
+      const sessEl = pageEls.games.querySelector("#game-now-session");
+      if (sessEl) {
+        const s = currentGameSessionSec();
+        const txt = s >= 3600
+          ? `Jogando há ${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`
+          : `Jogando há ${Math.floor(s / 60)}m`;
+        sessEl.textContent = txt;
+      }
+    }
+
+    if (state.timer.state === "running") {
+      const elapsed = Math.floor((Date.now() - state.timer.lastTick) / 1000);
+      if (elapsed >= 1) {
+        state.timer.lastTick += elapsed * 1000;
+        state.timer.remainSec = Math.max(0, state.timer.remainSec - elapsed);
+        if (state.timer.remainSec === 0) {
+          state.timer.state = "idle";
+          state.timer.remainSec = state.timer.totalSec;
+          triggerAlarm();
+          if (state.activePage === "timer") renderTimer();
+        } else if (state.activePage === "timer") {
+          updateTimerDisplayInPlace();
+        }
+        renderNav();
+      }
+    }
+  }
+
+  // ---- Shared Chart & Arc Helpers ----
+  function renderArcGauge(pct, color, valText, name, sub) {
+    const r = 46;
+    const C = 2 * Math.PI * r;
+    const arcLen = C * 0.75;
+    const clamped = pct == null ? 0 : Math.max(0, Math.min(100, pct));
+    const fill = (clamped / 100) * arcLen;
+    return `<div class="card arc-card">
+      <div class="arc-box">
+        <svg class="arc-svg" viewBox="0 0 112 112" aria-hidden="true">
+          <circle cx="56" cy="56" r="${r}" fill="none" stroke="var(--card-hi)" stroke-width="12"
+            stroke-linecap="round" stroke-dasharray="${arcLen.toFixed(2)} ${C.toFixed(2)}"
+            transform="rotate(135 56 56)"/>
+          ${
+            clamped > 0
+              ? `<circle cx="56" cy="56" r="${r}" fill="none" stroke="${color}" stroke-width="12"
+                  stroke-linecap="round" stroke-dasharray="${fill.toFixed(2)} ${C.toFixed(2)}"
+                  transform="rotate(135 56 56)"/>`
+              : ""
+          }
+        </svg>
+        <div class="arc-val">${esc(valText)}</div>
+      </div>
+      <div class="arc-name">${esc(name)}</div>
+      <div class="arc-sub">${esc(sub)}</div>
+    </div>`;
+  }
+
+  function drawLineChart(canvas, seriesList, yMax = 100, divLines = 4, lineWidth = 2.5) {
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const w = Math.max(120, Math.floor(rect.width));
+    const h = Math.max(54, Math.floor(rect.height));
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+
+    ctx.strokeStyle = "#262a32";
+    ctx.lineWidth = 1;
+    for (let i = 0; i < divLines; i++) {
+      const y = divLines === 1 ? Math.round(h / 2) + 0.5 : Math.round((h - 2) * (i / (divLines - 1))) + 1.5;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    for (const s of seriesList) {
+      const pts = s.data;
+      if (!pts.length) continue;
+      ctx.strokeStyle = s.color;
+      ctx.lineWidth = lineWidth;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.beginPath();
+      const total = s.slots || pts.length;
+      const offset = total - pts.length;
+      const step = w / Math.max(total - 1, 1);
+      let started = false;
+      pts.forEach((v, idx) => {
+        if (v == null || v < 0) {
+          started = false;
+          return;
+        }
+        const x = (offset + idx) * step;
+        const y = h - (Math.min(Math.max(v, 0), yMax) / yMax) * (h - 8) - 4;
+        if (!started) {
+          ctx.moveTo(x, y);
+          started = true;
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      ctx.stroke();
+    }
+  }
+
+  // ---- Page Renderers ----
   function renderActivePage() {
     switch (state.activePage) {
       case "home":
@@ -366,9 +647,6 @@
       case "calendar":
         renderCalendar();
         break;
-      case "network":
-        renderNetwork();
-        break;
       case "games":
         renderGames();
         break;
@@ -378,245 +656,434 @@
     }
   }
 
-  function renderWidgetBody(widget) {
-    if (widget === "stats") {
-      const s = state.stats;
-      if (!s) return `<div class="empty-state">Aguardando PC...</div>`;
-      const gpuHtml =
-        s.gpu != null
-          ? `<div class="w-stat-pill"><span class="w-stat-val" style="color:var(--green)">${Math.round(s.gpu)}%</span><span class="w-stat-lbl">GPU</span></div>`
-          : "";
-      const ramPct = s.ram_total ? Math.round((s.ram_used / s.ram_total) * 100) : 0;
-      return `<div class="w-stats-row">
-        <div class="w-stat-pill"><span class="w-stat-val" style="color:var(--cyan)">${Math.round(s.cpu)}%</span><span class="w-stat-lbl">CPU</span></div>
-        ${gpuHtml}
-        <div class="w-stat-pill"><span class="w-stat-val" style="color:var(--amber)">${ramPct}%</span><span class="w-stat-lbl">RAM</span></div>
-        <div class="w-stat-pill"><span class="w-stat-val" style="color:var(--indigo)">${Math.round(s.disk)}%</span><span class="w-stat-lbl">Disco</span></div>
-      </div>`;
-    }
+  function renderHomeWidget(it) {
+    const style = `grid-column:${it.x + 1}/span ${it.w};grid-row:${it.y + 1}/span ${it.h};`;
+    const tiny = it.w < 2;
+    const w = it.widget;
 
-    if (widget === "weather") {
-      const w = state.weather;
-      if (!w?.current) return `<div class="empty-state">Carregando clima...</div>`;
-      const c = w.current;
-      return `<div class="w-weather-row">
-        <div class="w-weather-temp">${Math.round(c.temperature_2m)}°</div>
-        <div class="w-weather-meta">
-          <div style="color:var(--text);font-weight:700">${esc(w.city || "Local")}</div>
-          <div>${esc(wmoText(c.weather_code))}</div>
-          <div>Sensação ${Math.round(c.apparent_temperature)}°</div>
-        </div>
-      </div>`;
-    }
-
-    if (widget === "media") {
-      const m = state.media;
-      if (!m || !m.active) return `<div class="empty-state">Nada tocando</div>`;
-      const art = (m.art_id && state.artById[m.art_id]) || state.latestArtUrl;
-      const img = art
-        ? `<img class="w-media-cover" src="${art}" alt="">`
-        : `<div class="w-media-cover" style="display:flex;align-items:center;justify-content:center;color:var(--muted)">${iconSvg("music_note")}</div>`;
-      return `<div class="w-media-row">
-        ${img}
-        <div class="w-media-info">
-          <div class="w-media-title">${esc(m.title)}</div>
-          <div class="w-media-artist">${esc(m.artist || m.source || "")}</div>
-        </div>
-      </div>`;
-    }
-
-    if (widget === "events") {
-      if (!state.events.length) {
-        return `<div class="empty-state">Sem eventos nos próximos ${state.eventsDays} dias</div>`;
-      }
-      return `<div class="w-events-list">${state.events
-        .map((ev) => {
-          const d = new Date(ev.start * 1000);
-          const dayName = d.toLocaleDateString("pt-BR", { weekday: "short" });
-          const time = ev.all_day
-            ? `${dayName} (Dia todo)`
-            : `${dayName} ${d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`;
-          return `<div class="w-event-item">
-            <span class="ev-bar" style="background:${esc(ev.color || "#38bdf8")}"></span>
-            <span class="ev-time" style="min-width:68px">${esc(time)}</span>
-            <span class="ev-title">${esc(ev.title)}</span>
-          </div>`;
-        })
-        .join("")}</div>`;
-    }
-
-    if (widget === "net") {
-      const n = state.net;
-      if (!n) return `<div class="empty-state">Aguardando rede...</div>`;
-      const lat = n.latency_ms != null ? `${Math.round(n.latency_ms)} ms` : "--";
-      return `<div class="w-stats-row">
-        <div class="w-stat-pill"><span class="w-stat-val" style="color:${n.online ? "var(--green)" : "var(--red)"}">${n.online ? "ON" : "OFF"}</span><span class="w-stat-lbl">Status</span></div>
-        <div class="w-stat-pill"><span class="w-stat-val" style="color:var(--cyan)">${lat}</span><span class="w-stat-lbl">Ping</span></div>
-        <div class="w-stat-pill"><span class="w-stat-val">${fmtBytes(n.today_bytes)}</span><span class="w-stat-lbl">Hoje</span></div>
-      </div>`;
-    }
-
-    if (widget === "game") {
-      const p = state.steam?.playing;
-      if (!p) return `<div class="empty-state">Nenhum jogo aberto</div>`;
-      return `<div class="w-media-row"><div class="w-media-info"><div class="w-media-title">${esc(p.name)}</div><div class="w-media-artist">${fmtTime(p.session_s)} jogados</div></div></div>`;
-    }
-
-    if (widget === "clock") {
+    if (w === "clock") {
       const now = new Date();
-      return `<div class="w-stats-row"><span style="font-size:32px;font-weight:800">${now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</span></div>`;
+      const hhmm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+      const date = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+      return `<div class="w-clock-box" style="${style}">
+        <div id="w-clock-time" class="w-clock-time">${esc(hhmm)}</div>
+        <div id="w-clock-date" class="w-clock-date">${esc(date)}</div>
+      </div>`;
     }
 
-    return `<div class="empty-state">--</div>`;
+    if (w === "stats") {
+      const s = state.stats;
+      const online = state.pcOnline && s;
+      const ramPct = online && s.ram_total ? (s.ram_used / s.ram_total) * 100 : null;
+      const rows = [
+        { name: "CPU", val: online ? s.cpu : null, color: "var(--accent2)" },
+        { name: "GPU", val: online && s.gpu != null ? s.gpu : null, color: "var(--cyan)" },
+        { name: "RAM", val: ramPct, color: "var(--data3)" },
+      ];
+      return `<div class="card widget-card" style="${style}" data-goto="stats">
+        <div class="w-stats-bars">${rows
+          .map((r) => {
+            const txt = r.val != null ? `${Math.round(r.val)}%` : "--";
+            const pct = r.val != null ? Math.min(100, Math.max(0, r.val)) : 0;
+            return `<div class="w-stats-row">
+              <span class="w-stats-lbl">${r.name}</span>
+              ${tiny ? "" : `<div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${r.color}"></div></div>`}
+              <span class="w-stats-val">${txt}</span>
+            </div>`;
+          })
+          .join("")}</div>
+      </div>`;
+    }
+
+    if (w === "events") {
+      const now = new Date();
+      const nowSec = now.getTime() / 1000;
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+      const upcoming = state.events.filter((ev) => ev.end > nowSec);
+      const maxRows = it.h >= 2 ? 3 : 1;
+      const shown = upcoming.slice(0, maxRows);
+      const more = Math.max(0, upcoming.length - shown.length);
+      const span = state.eventsDays === 1 ? "no próximo dia" : `nos próximos ${state.eventsDays} dias`;
+      const footer = more > 0
+        ? `+${more} ${span}`
+        : shown.length > 0
+          ? `Sem mais eventos ${span}`
+          : `Nada agendado ${span}`;
+
+      return `<div class="card widget-card w-events-card" style="${style}" data-goto="calendar">
+        <div class="caption">PRÓXIMOS</div>
+        <div class="w-events-list">${shown
+          .map((ev) => {
+            const st = new Date(ev.start * 1000);
+            let day = st.toLocaleDateString("pt-BR", { weekday: "short", day: "numeric", month: "short" });
+            if (sameLocalDay(st, now)) day = "Hoje";
+            else if (sameLocalDay(st, tomorrow)) day = "Amanhã";
+            let when;
+            if (ev.all_day) {
+              when = `${day}  •  Dia todo`;
+            } else if (ev.start <= nowSec) {
+              const endStr = new Date(ev.end * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+              when = `Agora  •  até ${endStr}`;
+            } else {
+              const stStr = st.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+              when = `${day}  •  ${stStr}`;
+            }
+            return `<div class="w-event-item">
+              <span class="ev-bar" style="background:${esc(ev.color || "var(--accent2)")}"></span>
+              <div class="w-event-body">
+                <div class="ev-title">${esc(ev.title)}</div>
+                <div class="ev-time">${esc(when)}</div>
+              </div>
+            </div>`;
+          })
+          .join("")}</div>
+        <div class="w-events-more" style="${shown.length ? "" : "padding-left:0"}">${esc(footer)}</div>
+      </div>`;
+    }
+
+    if (w === "weather") {
+      const wx = state.weather;
+      if (!wx?.current) {
+        return `<div class="card widget-card w-weather-card" style="${style}" data-goto="weather">
+          <div class="w-weather-row">
+            ${iconMi("cloud", "w-weather-ico")}
+            <div class="w-weather-info">
+              <div class="w-weather-temp">--</div>
+              ${tiny ? "" : `<div class="w-weather-cond">Carregando clima</div>`}
+            </div>
+          </div>
+        </div>`;
+      }
+      const c = wx.current;
+      const isDay = Boolean(c.is_day);
+      const hi = wx.daily?.temperature_2m_max?.[0];
+      const lo = wx.daily?.temperature_2m_min?.[0];
+      const rangeStr = hi != null && lo != null ? `Máx ${Math.round(hi)}°   Mín ${Math.round(lo)}°` : "";
+      return `<div class="card widget-card w-weather-card" style="${style}" data-goto="weather">
+        <div class="w-weather-row">
+          <span class="mi w-weather-ico" style="color:${weatherColor(c.weather_code, isDay)}">${MI[weatherIcon(c.weather_code, isDay)]}</span>
+          <div class="w-weather-info">
+            <div class="w-weather-temp">${Math.round(c.temperature_2m)}°</div>
+            ${
+              tiny
+                ? ""
+                : `<div class="w-weather-cond">${esc(weatherText(c.weather_code))}</div>
+                   <div class="w-weather-range">${esc(rangeStr)}</div>`
+            }
+          </div>
+        </div>
+      </div>`;
+    }
+
+    if (w === "media") {
+      const m = state.media;
+      const active = Boolean(m && m.active);
+      const art = active ? (m.art_id && state.artById[m.art_id]) || state.latestArtUrl : "";
+      const cover = art
+        ? `<img class="w-media-cover" src="${art}" alt="">`
+        : `<div class="w-media-cover">${iconMi("music_note")}</div>`;
+      const title = active ? m.title : "Nada tocando";
+      const sub = active ? m.artist || "" : state.pcOnline ? "" : "PC offline";
+      return `<div class="card widget-card w-media-card" style="${style}" data-goto="media">
+        <div class="w-media-row">
+          ${cover}
+          <div class="w-media-info">
+            <div class="w-media-title">${esc(title)}</div>
+            <div class="w-media-artist">${esc(sub)}</div>
+          </div>
+          ${
+            active
+              ? `<button class="w-media-play" id="btn-home-media-toggle" type="button" title="Play/Pause">${iconMi(m.playing ? "pause" : "play_arrow")}</button>`
+              : ""
+          }
+        </div>
+      </div>`;
+    }
+
+    if (w === "net") {
+      const n = state.net;
+      if (!n) {
+        return `<div class="card widget-card" style="${style}" data-goto="network">
+          <div class="w-net-head"><span class="caption">INTERNET</span></div>
+          <div class="w-net-lat" style="color:var(--dim)">--</div>
+          ${tiny ? "" : `<div class="w-net-sub">${state.pcOnline ? "Aguardando o PC" : "PC offline"}</div>`}
+        </div>`;
+      }
+      const latVal = n.latency_ms != null ? Math.round(n.latency_ms) : -1;
+      const latTxt = latVal >= 0 ? `${latVal} ms` : "--";
+      const latCol = latVal < 0 ? "var(--dim)" : latVal < 40 ? "var(--text)" : latVal < 100 ? "var(--warn)" : "var(--bad)";
+      let sub = "";
+      if (n.testing) {
+        sub = "Testando velocidade...";
+      } else if (n.speed) {
+        sub = `↓ ${Math.round(n.speed.down_mbps)}  ↑ ${Math.round(n.speed.up_mbps)} Mbps  •  ${fmtAgo(n.speed.at)}`;
+      } else {
+        sub = `Jitter ${n.jitter_ms ?? "--"} ms  •  Perda ${n.loss_pct ?? 0}%`;
+      }
+      return `<div class="card widget-card" style="${style}" data-goto="network">
+        <div class="w-net-head">
+          <span class="caption">INTERNET</span>
+          ${tiny ? "" : `<span class="w-net-state" style="color:${n.online ? "var(--good)" : "var(--bad)"}">${n.online ? "Online" : "Offline"}</span>`}
+        </div>
+        <div class="w-net-lat" style="color:${latCol}">${latTxt}</div>
+        ${tiny ? "" : `<div class="w-net-sub">${esc(sub)}</div>`}
+      </div>`;
+    }
+
+    if (w === "game") {
+      const st = state.steam;
+      const playing = st?.playing;
+      const g = playing || st?.recent?.[0] || null;
+      const thumb = g ? state.steamImgs[`${g.appid}_1`] || state.steamImgs[`${g.appid}_0`] || state.steamImgs[`${g.appid}_2`] : "";
+      let cap = "STEAM";
+      let capCol = "var(--muted)";
+      let sub = !st ? (state.pcOnline ? "Aguardando o PC" : "PC offline") : st.found ? "Sem jogos recentes" : "Steam não encontrada";
+      let name = "";
+      if (playing) {
+        cap = "JOGANDO";
+        capCol = "var(--good)";
+        const s = currentGameSessionSec();
+        sub = s >= 3600 ? `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m` : `${Math.floor(s / 60)}m`;
+        if (g.total_min > 0 && g.total_min * 60 >= s + 600) sub += `  •  ${fmtPlaytime(g.total_min)}`;
+        name = g.name;
+      } else if (g) {
+        cap = "RECENTE";
+        const parts = [];
+        const ago = fmtGameAgo(g.last);
+        if (ago) parts.push(ago);
+        if (g.total_min > 0) parts.push(fmtPlaytime(g.total_min));
+        sub = parts.join("  •  ");
+        name = g.name;
+      }
+      return `<div class="card widget-card" style="${style}" data-goto="games">
+        <div class="w-game-row">
+          <div class="w-game-art">
+            ${thumb ? `<img src="${thumb}" alt="">` : iconMi("sports_esports")}
+            ${!playing && g ? `<button class="w-game-play" data-launch-appid="${g.appid}" type="button" title="Abrir jogo">${iconMi("play_arrow")}</button>` : ""}
+          </div>
+          <div class="w-game-info">
+            <div class="caption" style="color:${capCol}">${cap}</div>
+            <div class="w-game-sub">${esc(sub)}</div>
+            <div class="w-game-name">${esc(name)}</div>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="card widget-card" style="${style}"><div class="empty-state">--</div></div>`;
   }
 
   function renderHome() {
-    const defaultGrid = [
-      { widget: "stats", x: 0, y: 0, w: 3, h: 1 },
-      { widget: "events", x: 0, y: 1, w: 3, h: 2 },
-      { widget: "weather", x: 3, y: 0, w: 2, h: 1 },
-      { widget: "media", x: 3, y: 1, w: 2, h: 1 },
-      { widget: "net", x: 3, y: 2, w: 2, h: 1 },
-    ];
-    const items = (state.home?.grid || defaultGrid).filter(
-      (g) => g.widget !== "claude" && g.widget !== "ai"
-    );
-    const targetPage = {
-      stats: "stats",
-      events: "calendar",
-      weather: "weather",
-      media: "media",
-      net: "network",
-      game: "games",
-    };
-    const titles = {
-      stats: "PC",
-      events: "Agenda",
-      weather: "Clima",
-      media: "Mídia",
-      net: "Internet",
-      game: "Jogo",
-      clock: "Relógio",
-    };
+    const showHdr = state.home?.header !== false;
+    const now = new Date();
+    const hhmm = now.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+    const fullDate = now.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+    const items = homeGridItems();
 
-    pageEls.home.innerHTML = `<div class="home-grid">${items
-      .map((it) => {
-        const style = `grid-column:${it.x + 1}/span ${it.w};grid-row:${it.y + 1}/span ${it.h};`;
-        const dest = targetPage[it.widget] || "home";
-        return `<div class="card widget-card" style="${style}" data-goto="${dest}">
-          <div class="card-title"><span>${titles[it.widget] || esc(it.widget)}</span></div>
-          ${renderWidgetBody(it.widget)}
-        </div>`;
-      })
-      .join("")}</div>`;
+    pageEls.home.innerHTML = `<div class="home-wrap">
+      ${
+        showHdr
+          ? `<div class="home-header">
+               <span id="home-hdr-time" class="home-hdr-time">${esc(hhmm)}</span>
+               <span id="home-hdr-date" class="home-hdr-date">${esc(fullDate)}</span>
+             </div>`
+          : ""
+      }
+      <div class="home-grid">${items.map(renderHomeWidget).join("")}</div>
+    </div>`;
 
     pageEls.home.querySelectorAll("[data-goto]").forEach((el) => {
       el.addEventListener("click", () => switchPage(el.dataset.goto));
     });
-  }
-
-  function drawLineChart(canvas, seriesList, yMax = 100) {
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
-    const w = Math.max(120, Math.floor(rect.width));
-    const h = Math.max(60, Math.floor(rect.height));
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, w, h);
-
-    // Subtle grid lines
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 3; i++) {
-      const y = Math.round((h * i) / 4) + 0.5;
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-
-    for (const s of seriesList) {
-      const pts = s.data;
-      if (!pts.length) continue;
-      ctx.strokeStyle = s.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      const step = w / Math.max(pts.length - 1, 1);
-      let started = false;
-      pts.forEach((v, idx) => {
-        if (v == null || v < 0) {
-          started = false;
-          return;
-        }
-        const x = idx * step;
-        const y = h - (Math.min(Math.max(v, 0), yMax) / yMax) * (h - 8) - 4;
-        if (!started) {
-          ctx.moveTo(x, y);
-          started = true;
-        } else {
-          ctx.lineTo(x, y);
-        }
+    pageEls.home.querySelector("#btn-home-media-toggle")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      sendCmd({ type: "media", cmd: "toggle", value: 0 });
+    });
+    pageEls.home.querySelectorAll("[data-launch-appid]").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        sendCmd({ type: "steam_launch", appid: Number(btn.dataset.launchAppid) });
       });
-      ctx.stroke();
-    }
+    });
   }
 
-  function renderStats() {
+  function renderStatsPcView() {
     const s = state.stats;
-    if (!s) {
-      pageEls.stats.innerHTML = `<div class="card" style="height:100%"><div class="empty-state">Aguardando estatísticas do PC...</div></div>`;
-      return;
-    }
-    const ramPct = s.ram_total ? (s.ram_used / s.ram_total) * 100 : 0;
-    const hasGpu = s.gpu != null;
-    const vramPct = hasGpu && s.vram_total ? (s.vram_used / s.vram_total) * 100 : 0;
+    const online = state.pcOnline && s;
+    const hasGpu = online && s.gpu != null;
+    const ramPct = online && s.ram_total ? (s.ram_used / s.ram_total) * 100 : null;
+    const vramPct = hasGpu && s.vram_total ? (s.vram_used / s.vram_total) * 100 : null;
 
-    pageEls.stats.innerHTML = `<div class="stats-layout">
-      <div class="stats-gauges">
-        <div class="card gauge-card">
-          <div class="gauge-head"><span>CPU</span><span>${esc(s.cpu_name || "")}</span></div>
-          <div class="gauge-val" style="color:var(--cyan)">${Math.round(s.cpu)}%</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(s.cpu, 100)}%;background:var(--cyan)"></div></div>
+    const cpuSub = online && s.cpu_temp != null && s.cpu_temp >= 0 ? `${Math.round(s.cpu_temp)}°C` : "";
+    const gpuSub = online ? (hasGpu ? (s.gpu_temp != null && s.gpu_temp >= 0 ? `${Math.round(s.gpu_temp)}°C` : "") : "Sem GPU") : "";
+    const ramSub = online && s.ram_total ? `${s.ram_used.toFixed(1)} / ${Math.round(s.ram_total)} GB` : "";
+    const vramSub = hasGpu && s.vram_total ? `${s.vram_used.toFixed(1)} / ${Math.round(s.vram_total)} GB` : "";
+
+    const hwNames = online ? [s.cpu_name, s.gpu_name].filter(Boolean).join("  /  ") : "";
+    const netTxt = online ? `↓ ${fmtRate(s.net_down)}    ↑ ${fmtRate(s.net_up)}` : "";
+    const diskTxt = online ? `Disco ${Math.round(s.disk)}% usado` : "";
+
+    return `<div class="stats-view">
+      <div class="pc-gauges">
+        ${renderArcGauge(online ? s.cpu : null, "var(--accent2)", online ? `${Math.round(s.cpu)}%` : "--", "CPU", cpuSub)}
+        ${renderArcGauge(hasGpu ? s.gpu : null, "var(--cyan)", hasGpu ? `${Math.round(s.gpu)}%` : "--", "GPU", gpuSub)}
+        ${renderArcGauge(ramPct, "var(--data3)", ramPct != null ? `${Math.round(ramPct)}%` : "--", "RAM", ramSub)}
+        ${renderArcGauge(vramPct, "var(--vram)", vramPct != null ? `${Math.round(vramPct)}%` : "--", "VRAM", vramSub)}
+      </div>
+
+      <div class="card chart-card">
+        <div class="chart-head">
+          <div class="chart-legend">
+            <span class="caption">ÚLTIMO MINUTO</span>
+            <span class="legend-item" style="color:var(--accent2)">• CPU</span>
+            <span class="legend-item" style="color:var(--cyan)">• GPU</span>
+          </div>
+          <span class="chart-net">${esc(netTxt)}</span>
         </div>
-        <div class="card gauge-card">
-          <div class="gauge-head"><span>GPU</span><span>${hasGpu ? `${s.gpu_temp}°C` : "N/D"}</span></div>
-          <div class="gauge-val" style="color:var(--green)">${hasGpu ? `${Math.round(s.gpu)}%` : "--"}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${hasGpu ? Math.min(s.gpu, 100) : 0}%;background:var(--green)"></div></div>
+        <div class="chart-wrap"><canvas id="stats-chart"></canvas></div>
+        <div class="chart-foot">
+          <span class="chart-hw">${esc(hwNames)}</span>
+          <span class="chart-disk">${esc(diskTxt)}</span>
         </div>
-        <div class="card gauge-card">
-          <div class="gauge-head"><span>RAM</span><span>${s.ram_used}/${s.ram_total} GB</span></div>
-          <div class="gauge-val" style="color:var(--amber)">${Math.round(ramPct)}%</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(ramPct, 100)}%;background:var(--amber)"></div></div>
+        ${online ? "" : `<div class="chart-offline-msg">Inicie o companion no seu PC</div>`}
+      </div>
+    </div>`;
+  }
+
+  function renderStatsInternetView() {
+    const n = state.net;
+    const valid = Boolean(n);
+    const latVal = valid && n.latency_ms != null ? Math.round(n.latency_ms) : -1;
+    const latTxt = latVal >= 0 ? `${latVal} ms` : "--";
+    const latCol = latVal < 0 ? "var(--dim)" : latVal < 40 ? "var(--text)" : latVal < 100 ? "var(--warn)" : "var(--bad)";
+    const latSub = valid ? `Jitter ${n.jitter_ms ?? "--"} ms  •  Perda ${n.loss_pct ?? 0}%` : "";
+    const latSubCol = valid && (n.loss_pct || 0) >= 5 ? "var(--bad)" : "var(--muted)";
+
+    let statusTxt = "--";
+    let statusCol = "var(--dim)";
+    let dropLine = "";
+    if (valid) {
+      statusTxt = n.online ? "Online" : "Offline";
+      statusCol = n.online ? "var(--good)" : "var(--bad)";
+      const parts = [];
+      if (n.online && n.up_since) parts.push(`On ${fmtDurShort(Date.now() / 1000 - n.up_since)}`);
+      if (n.last_drop?.at) {
+        parts.push(`Última queda ${fmtAgo(n.last_drop.at)}, ${fmtDurShort(n.last_drop.dur_s)}`);
+      } else {
+        parts.push(n.ip || "Sem quedas registradas");
+      }
+      dropLine = parts.join("  •  ");
+    }
+
+    const hist = valid && Array.isArray(n.hist) ? n.hist : [];
+    const peak = Math.max(50, ...hist.filter((x) => x > 0));
+
+    const sp = valid ? n.speed : null;
+    const downTxt = sp ? `${Math.round(sp.down_mbps)} Mbps` : "--";
+    const upTxt = sp ? `${Math.round(sp.up_mbps)} Mbps` : "--";
+    const spSub = sp
+      ? `Ping ${Math.round(sp.ping_ms)} ms  •  testado ${fmtAgo(sp.at)}`
+      : "Sem teste ainda. Um teste usa cerca de 35 MB.";
+
+    const liveDown = state.pcOnline && state.stats ? ((state.stats.net_down || 0) * 8.192 / 1000).toFixed(1) : null;
+    const liveUp = state.pcOnline && state.stats ? ((state.stats.net_up || 0) * 8.192 / 1000).toFixed(1) : null;
+    const nowTxt = liveDown != null ? `Agora ↓ ${liveDown}  ↑ ${liveUp} Mbps` : "";
+
+    return `<div class="stats-view">
+      <div class="net-top-row">
+        <div class="card net-top-card">
+          <div class="caption">LATÊNCIA</div>
+          <div class="net-big-val" style="color:${latCol}">${latTxt}</div>
+          <div class="net-sub-line" style="color:${latSubCol}">${esc(latSub)}</div>
         </div>
-        <div class="card gauge-card">
-          <div class="gauge-head"><span>VRAM</span><span>${hasGpu && s.vram_total ? `${s.vram_used}/${s.vram_total} GB` : "N/D"}</span></div>
-          <div class="gauge-val" style="color:var(--indigo)">${hasGpu && s.vram_total ? `${Math.round(vramPct)}%` : "--"}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${Math.min(vramPct, 100)}%;background:var(--indigo)"></div></div>
+        <div class="card net-top-card">
+          <div class="caption">STATUS</div>
+          <div class="net-status-val" style="color:${statusCol}">${statusTxt}</div>
+          <div class="net-sub-line">${esc(dropLine)}</div>
+        </div>
+        <div class="card net-top-card">
+          <div class="caption">DADOS USADOS</div>
+          <div class="net-data-rows">
+            <div class="net-data-row">
+              <span class="net-data-lbl">Hoje</span>
+              <span class="net-data-val">${valid ? fmtBytes(n.today_bytes) : "--"}</span>
+            </div>
+            <div class="net-data-row">
+              <span class="net-data-lbl">Este mês</span>
+              <span class="net-data-val">${valid ? fmtBytes(n.month_bytes) : "--"}</span>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="card chart-card">
-        <div class="card-title"><span>Histórico (60s)</span><span style="color:var(--cyan)">CPU</span></div>
-        <div class="chart-wrap"><canvas id="stats-chart"></canvas></div>
+        <div class="chart-head">
+          <span class="caption">LATÊNCIA, ÚLTIMOS 2 MINUTOS</span>
+          <span class="chart-hw">${valid ? `máx ${peak} ms` : ""}</span>
+        </div>
+        <div class="chart-wrap"><canvas id="net-chart"></canvas></div>
+        ${state.pcOnline ? "" : `<div class="chart-offline-msg">Inicie o companion no seu PC</div>`}
       </div>
 
-      <div class="card">
-        <div class="card-title"><span>Rede & Disco</span><span>${esc(s.gpu_name || "")}</span></div>
-        <div class="stats-details">
-          <div class="kv-box"><div class="kv-lbl">Download</div><div class="kv-val" style="color:var(--cyan)">${fmtRate(s.net_down)}</div></div>
-          <div class="kv-box"><div class="kv-lbl">Upload</div><div class="kv-val" style="color:var(--green)">${fmtRate(s.net_up)}</div></div>
-          <div class="kv-box"><div class="kv-lbl">Disco C:</div><div class="kv-val">${s.disk}%</div></div>
-          <div class="kv-box"><div class="kv-lbl">Temp. GPU</div><div class="kv-val">${hasGpu ? `${s.gpu_temp}°C` : "--"}</div></div>
+      <div class="card net-speed-card">
+        <div class="chart-head">
+          <span class="caption">SPEED TEST</span>
+          <span class="net-now-live">${esc(nowTxt)}</span>
+        </div>
+        <div class="net-speed-body">
+          <div class="net-speed-left">
+            <div class="net-speed-vals">
+              <span class="speed-metric"><span class="mi" style="color:var(--cyan)">${MI.arrow_downward}</span>${esc(downTxt)}</span>
+              <span class="speed-metric"><span class="mi" style="color:var(--accent2)">${MI.arrow_upward}</span>${esc(upTxt)}</span>
+            </div>
+            <div class="net-sub-line">${esc(spSub)}</div>
+          </div>
+          ${
+            valid
+              ? `<button id="btn-speedtest" class="pill-btn pill-accent" type="button" ${n.testing ? "disabled" : ""}>
+                   ${n.testing ? "Testando..." : "Rodar teste"}
+                 </button>`
+              : ""
+          }
         </div>
       </div>
     </div>`;
+  }
 
-    const series = [{ data: state.statsHist.cpu, color: "#38bdf8" }];
-    if (hasGpu) series.push({ data: state.statsHist.gpu, color: "#34d399" });
-    drawLineChart(pageEls.stats.querySelector("#stats-chart"), series, 100);
+  function renderStats() {
+    const switcher = state.netEnabled
+      ? `<div class="seg-switch" role="tablist">
+           <button class="seg-btn ${state.statsView === "pc" ? "active" : ""}" data-stats-view="pc" type="button">PC</button>
+           <button class="seg-btn ${state.statsView === "internet" ? "active" : ""}" data-stats-view="internet" type="button">Internet</button>
+         </div>`
+      : "";
+
+    const body = state.statsView === "internet" && state.netEnabled
+      ? renderStatsInternetView()
+      : renderStatsPcView();
+
+    pageEls.stats.innerHTML = `<div class="stats-shell">${switcher}${body}</div>`;
+
+    pageEls.stats.querySelectorAll("[data-stats-view]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.statsView = btn.dataset.statsView;
+        renderStats();
+      });
+    });
+
+    if (state.statsView === "internet" && state.netEnabled) {
+      const hist = state.net?.hist || [];
+      const peak = Math.max(50, ...hist.filter((x) => x > 0));
+      drawLineChart(pageEls.stats.querySelector("#net-chart"), [{ data: hist, color: "#5ed3c6", slots: 120 }], peak, 3, 2);
+      pageEls.stats.querySelector("#btn-speedtest")?.addEventListener("click", (e) => {
+        e.currentTarget.textContent = "Iniciando...";
+        sendCmd({ type: "speedtest" });
+      });
+    } else if (state.pcOnline) {
+      const series = [{ data: state.statsHist.cpu, color: "#6cb4ff", slots: 60 }];
+      if (state.stats?.gpu != null) series.push({ data: state.statsHist.gpu, color: "#5ed3c6", slots: 60 });
+      drawLineChart(pageEls.stats.querySelector("#stats-chart"), series, 100, 4, 3);
+    }
   }
 
   function renderMedia() {
@@ -626,62 +1093,74 @@
     );
 
     if (!m || !m.active) {
-      pageEls.media.innerHTML = `<div class="card" style="height:100%;display:flex;align-items:center;justify-content:center;">
-        <div class="media-empty-actions">
-          <div class="empty-state" style="padding:0">Nenhuma mídia tocando no momento.</div>
-          <button id="btn-media-open-spotify" class="btn-open-spotify icon-only" type="button" title="Abrir Spotify no PC">
-            ${iconSvg("spotify")}
-          </button>
-        </div>
+      pageEls.media.innerHTML = `<div class="media-empty">
+        <span class="mi empty-ico">${MI.music_note}</span>
+        <div class="empty-title">Nada tocando</div>
+        <div class="empty-sub">${state.pcOnline ? "Toque algo no seu PC" : "Inicie o companion no seu PC"}</div>
+        ${
+          spotifyTileIdx >= 0
+            ? `<button id="btn-media-open-spotify" class="btn-open-spotify" type="button" title="Abrir Spotify no PC">${spotifySvg()}</button>`
+            : ""
+        }
       </div>`;
       pageEls.media.querySelector("#btn-media-open-spotify")?.addEventListener("click", () => {
-        if (spotifyTileIdx >= 0) {
-          sendCmd({ type: "shortcut", id: spotifyTileIdx });
-        }
+        sendCmd({ type: "shortcut", id: spotifyTileIdx });
       });
       return;
     }
+
     const art = (m.art_id && state.artById[m.art_id]) || state.latestArtUrl;
     const dur = Number(m.dur || 0);
     const pos = Math.floor(currentMediaPos());
+    const seekPct = dur > 0 ? Math.min(100, (pos / dur) * 100) : 0;
 
     pageEls.media.innerHTML = `<div class="media-layout">
       <div class="media-art-box">
-        ${art ? `<img src="${art}" alt="Capa">` : iconSvg("music_note")}
+        ${art ? `<img src="${art}" alt="Capa">` : iconMi("music_note")}
       </div>
       <div class="media-right">
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="media-src-row">
           <span class="media-source">${esc(m.source || "Mídia")}</span>
-          <button id="btn-media-open-spotify" class="media-btn media-btn-app" type="button" title="Abrir Spotify no PC">
-            ${iconSvg("spotify")}
-          </button>
+          ${
+            spotifyTileIdx >= 0
+              ? `<button id="btn-media-open-spotify" class="media-btn-app" type="button" title="Abrir Spotify no PC">${spotifySvg()}</button>`
+              : ""
+          }
         </div>
         <div class="media-title">${esc(m.title)}</div>
-        <div class="media-artist">${esc([m.artist, m.album].filter(Boolean).join(" • "))}</div>
-        <div class="media-seek-row">
-          <span id="media-pos" class="media-time">${fmtTime(pos)}</span>
-          <input id="media-seek" class="seek-slider" type="range" min="0" max="${Math.max(dur, 1)}" value="${pos}" ${m.can_seek ? "" : "disabled"}>
-          <span class="media-time">${fmtTime(dur)}</span>
+        <div class="media-artist">${esc(m.artist || "")}</div>
+        <div class="media-album">${esc(m.album || "")}</div>
+        <div class="media-seek-wrap">
+          <input id="media-seek" class="seek-slider" type="range" min="0" max="${Math.max(dur, 1)}" value="${pos}" style="--seek-pct:${seekPct.toFixed(1)}%" ${m.can_seek && dur > 0 ? "" : "disabled"}>
+          <div class="media-times">
+            <span id="media-pos">${fmtDuration(pos)}</span>
+            <span>${dur > 0 ? fmtDuration(dur) : ""}</span>
+          </div>
         </div>
         <div class="media-controls">
-          <button class="media-btn" data-media-cmd="prev" type="button" title="Anterior">${iconSvg("skip_previous")}</button>
-          <button class="media-btn play" data-media-cmd="toggle" type="button" title="Play/Pause">${iconSvg(m.playing ? "pause" : "play_arrow")}</button>
-          <button class="media-btn" data-media-cmd="next" type="button" title="Próxima">${iconSvg("skip_next")}</button>
+          <button class="media-btn" data-media-cmd="prev" type="button" title="Anterior">${iconMi("skip_previous")}</button>
+          <button class="media-btn play" data-media-cmd="toggle" type="button" title="Play/Pause">${iconMi(m.playing ? "pause" : "play_arrow")}</button>
+          <button class="media-btn" data-media-cmd="next" type="button" title="Próxima">${iconMi("skip_next")}</button>
         </div>
       </div>
     </div>`;
 
     pageEls.media.querySelector("#btn-media-open-spotify")?.addEventListener("click", () => {
-      if (spotifyTileIdx >= 0) {
-        sendCmd({ type: "shortcut", id: spotifyTileIdx });
-      }
+      if (spotifyTileIdx >= 0) sendCmd({ type: "shortcut", id: spotifyTileIdx });
     });
 
     pageEls.media.querySelectorAll("[data-media-cmd]").forEach((btn) => {
       btn.addEventListener("click", () => sendCmd({ type: "media", cmd: btn.dataset.mediaCmd, value: 0 }));
     });
+
     const slider = pageEls.media.querySelector("#media-seek");
-    if (slider && m.can_seek) {
+    if (slider && m.can_seek && dur > 0) {
+      slider.addEventListener("input", () => {
+        const v = Number(slider.value);
+        const posEl = pageEls.media.querySelector("#media-pos");
+        if (posEl) posEl.textContent = fmtDuration(v);
+        slider.style.setProperty("--seek-pct", `${Math.min(100, (v / dur) * 100).toFixed(1)}%`);
+      });
       slider.addEventListener("change", () => {
         sendCmd({ type: "media", cmd: "seek", value: Number(slider.value) });
       });
@@ -690,21 +1169,29 @@
 
   function renderShortcuts() {
     if (!state.tiles.length) {
-      pageEls.shortcuts.innerHTML = `<div class="card" style="height:100%"><div class="empty-state">Nenhum atalho configurado em config.toml.</div></div>`;
+      pageEls.shortcuts.innerHTML = `<div class="media-empty">
+        <span class="mi empty-ico">${MI.grid_view}</span>
+        <div class="empty-title">Nenhum atalho configurado</div>
+        <div class="empty-sub">Inicie o companion no seu PC</div>
+      </div>`;
       return;
     }
-    pageEls.shortcuts.innerHTML = `<div class="tiles-grid">${state.tiles
+    const n = state.tiles.length;
+    const cols = n <= 4 ? 2 : n <= 6 ? 3 : 4;
+    pageEls.shortcuts.innerHTML = `<div class="tiles-grid" style="--cols:${cols}">${state.tiles
       .map((t, idx) => {
         const lit = state.tileOn.has(idx) ? "lit" : "";
-        return `<button class="tile-btn ${lit}" data-tile-id="${idx}" type="button" style="background:${esc(t.color || "#2b2f3a")}">
-          ${iconSvg(t.icon)}
-          <span>${esc(t.label)}</span>
+        const dis = !state.pcOnline ? "disabled" : "";
+        return `<button class="tile-btn ${lit} ${dis}" data-tile-id="${idx}" type="button" style="--tile-col:${esc(t.color || "#2b2f3a")}">
+          ${iconMi(t.icon)}
+          <span class="tile-lbl">${esc(t.label)}</span>
         </button>`;
       })
       .join("")}</div>`;
 
     pageEls.shortcuts.querySelectorAll("[data-tile-id]").forEach((btn) => {
       btn.addEventListener("click", () => {
+        if (!state.pcOnline) return;
         sendCmd({ type: "shortcut", id: Number(btn.dataset.tileId) });
       });
     });
@@ -719,6 +1206,10 @@
     const c = w.current;
     const h = w.hourly || {};
     const d = w.daily || {};
+    const isDay = Boolean(c.is_day);
+    const updatedStr = w.updated_at
+      ? `Atualizado ${new Date(w.updated_at * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`
+      : "";
 
     const nowMs = Date.now();
     const hours = (h.time || [])
@@ -726,56 +1217,64 @@
         t,
         ms: new Date(t).getTime(),
         temp: h.temperature_2m?.[i],
-        pop: h.precipitation_probability?.[i],
+        code: h.weather_code?.[i] ?? c.weather_code,
+        pop: h.precipitation_probability?.[i] ?? 0,
       }))
       .filter((x) => x.ms >= nowMs - 3600_000)
-      .slice(0, 12);
+      .slice(0, 24);
 
     const days = (d.time || []).slice(0, 6).map((t, i) => ({
       t,
-      code: d.weather_code?.[i],
+      code: d.weather_code?.[i] ?? 0,
       tmax: d.temperature_2m_max?.[i],
       tmin: d.temperature_2m_min?.[i],
-      pop: d.precipitation_probability_max?.[i],
+      pop: d.precipitation_probability_max?.[i] ?? 0,
     }));
 
     pageEls.weather.innerHTML = `<div class="weather-layout">
-      <div class="card weather-now">
-        <div>
-          <div class="card-title"><span>${esc(w.city || "Local")}</span></div>
-          <div class="weather-big-temp">${Math.round(c.temperature_2m)}°C</div>
-          <div class="weather-cond">${esc(wmoText(c.weather_code))}</div>
+      <div class="card weather-now-card">
+        <div class="weather-now-left">
+          <span class="mi weather-now-ico" style="color:${weatherColor(c.weather_code, isDay)}">${MI[weatherIcon(c.weather_code, isDay)]}</span>
+          <div>
+            <div class="weather-big-temp">${Math.round(c.temperature_2m)}°</div>
+            <div class="weather-cond">${esc(weatherText(c.weather_code))}</div>
+            <div class="weather-city">${esc(w.city || "Local")}</div>
+          </div>
         </div>
-        <div class="weather-meta-grid">
-          <div>Sensação: <b>${Math.round(c.apparent_temperature)}°</b></div>
-          <div>Umidade: <b>${Math.round(c.relative_humidity_2m)}%</b></div>
-          <div>Vento: <b>${Math.round(c.wind_speed_10m)} km/h</b></div>
+        <div class="weather-now-right">
+          <div>Sensação ${Math.round(c.apparent_temperature)}°</div>
+          <div>Umidade ${Math.round(c.relative_humidity_2m)}%</div>
+          <div>Vento ${Math.round(c.wind_speed_10m)} km/h</div>
+          <div class="weather-updated">${esc(updatedStr)}</div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-title"><span>Próximas horas</span></div>
+      <div class="card weather-hourly-card">
         <div class="hourly-strip">${hours
-          .map((x) => {
-            const hh = new Date(x.t).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-            return `<div class="hour-pill">
-              <div style="color:var(--muted)">${hh}</div>
-              <div style="font-size:15px;font-weight:800;margin:2px 0">${Math.round(x.temp)}°</div>
-              <div style="color:var(--cyan)">${x.pop ?? 0}%</div>
+          .map((x, idx) => {
+            const dt = new Date(x.t);
+            const hDay = dt.getHours() >= 6 && dt.getHours() < 19;
+            const hh = idx === 0 ? "Agora" : dt.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+            return `<div class="hour-col">
+              <div class="hour-time">${hh}</div>
+              <span class="mi hour-ico" style="color:${weatherColor(x.code, hDay)}">${MI[weatherIcon(x.code, hDay)]}</span>
+              <div class="hour-temp">${Math.round(x.temp)}°</div>
+              <div class="hour-pop">${x.pop >= 10 ? `${Math.round(x.pop)}%` : ""}</div>
             </div>`;
           })
           .join("")}</div>
       </div>
 
-      <div class="card">
-        <div class="card-title"><span>Próximos 6 dias</span></div>
-        <div class="daily-list">${days
-          .map((x) => {
-            const label = new Date(x.t + "T12:00:00").toLocaleDateString("pt-BR", { weekday: "short", day: "2-digit" });
-            return `<div class="day-card">
-              <div style="font-weight:700;text-transform:capitalize">${label}</div>
-              <div style="color:var(--muted);font-size:11px">${esc(wmoText(x.code))}</div>
-              <div><b>${Math.round(x.tmax)}°</b> <span style="color:var(--muted)">/ ${Math.round(x.tmin)}°</span></div>
+      <div class="card weather-daily-card">
+        <div class="daily-grid">${days
+          .map((x, idx) => {
+            const dt = new Date(x.t + "T12:00:00");
+            const label = idx === 0 ? "Hoje" : dt.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "");
+            return `<div class="day-col">
+              <div class="day-name">${esc(label)}</div>
+              <span class="mi day-ico" style="color:${weatherColor(x.code, true)}">${MI[weatherIcon(x.code, true)]}</span>
+              <div class="day-range">${Math.round(x.tmax)}° / ${Math.round(x.tmin)}°</div>
+              <div class="day-pop">${x.pop >= 10 ? `${Math.round(x.pop)}%` : ""}</div>
             </div>`;
           })
           .join("")}</div>
@@ -784,140 +1283,146 @@
   }
 
   function renderCalendar() {
-    if (!state.events.length) {
-      pageEls.calendar.innerHTML = `<div class="card" style="height:100%"><div class="empty-state">Sem eventos nos próximos ${state.eventsDays} dias.<br><span style="font-size:11px">Configure feeds ICS em companion/config.toml</span></div></div>`;
+    const now = new Date();
+    const nowSec = now.getTime() / 1000;
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const visible = state.events.filter((ev) => ev.end > nowSec);
+    const span = state.eventsDays === 1 ? "no próximo dia" : `nos próximos ${state.eventsDays} dias`;
+
+    if (!visible.length) {
+      pageEls.calendar.innerHTML = `<div class="cal-wrap" style="height:100%">
+        <div class="cal-page-title">Próximos</div>
+        <div class="media-empty">
+          <div class="empty-title">Nada agendado ${span}</div>
+          <div class="empty-sub">${state.pcOnline ? "Configure feeds ICS em companion/config.toml" : "Inicie o companion no seu PC"}</div>
+        </div>
+      </div>`;
       return;
     }
+
     const groups = new Map();
-    for (const ev of state.events) {
-      const d = new Date(ev.start * 1000);
-      const dayKey = d.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
-      if (!groups.has(dayKey)) groups.set(dayKey, []);
-      groups.get(dayKey).push(ev);
+    for (const ev of visible) {
+      const dayDate = ev.start < nowSec ? now : new Date(ev.start * 1000);
+      const dateStr = dayDate.toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+      let hdr = dateStr;
+      if (sameLocalDay(dayDate, now)) hdr = `HOJE  •  ${dateStr}`;
+      else if (sameLocalDay(dayDate, tomorrow)) hdr = `AMANHÃ  •  ${dateStr}`;
+      if (!groups.has(hdr)) groups.set(hdr, []);
+      groups.get(hdr).push(ev);
     }
 
-    let html = `<div class="cal-list">`;
+    let html = `<div class="cal-wrap"><div class="cal-page-title">Próximos</div><div class="cal-list">`;
     for (const [day, list] of groups.entries()) {
       html += `<div class="cal-day-hdr">${esc(day)}</div>`;
       for (const ev of list) {
+        const live = !ev.all_day && ev.start <= nowSec && ev.end > nowSec;
+        const col = esc(ev.color || "var(--accent2)");
         const s = new Date(ev.start * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
         const e = new Date(ev.end * 1000).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
-        const when = ev.all_day ? "Dia todo" : `${s} - ${e}`;
-        html += `<div class="cal-ev">
-          <span class="ev-bar" style="background:${esc(ev.color || "#7c9cff")}"></span>
-          <span class="ev-time" style="min-width:92px">${esc(when)}</span>
-          <div style="min-width:0;flex:1">
-            <div class="ev-title">${esc(ev.title)}</div>
-            ${ev.loc ? `<div style="font-size:11px;color:var(--muted)">${esc(ev.loc)}</div>` : ""}
+        const when = ev.all_day ? "Dia todo" : `${s}<br>${e}`;
+        const sub = [ev.loc, ev.cal].filter(Boolean).join("  •  ");
+        html += `<div class="cal-ev${live ? " live" : ""}" style="${live ? `border-color:${col}` : ""}">
+          <span class="cal-ev-bar" style="background:${col}"></span>
+          <span class="cal-ev-time">${when}</span>
+          <div class="cal-ev-main">
+            <div class="cal-ev-title">${esc(ev.title)}</div>
+            ${sub ? `<div class="cal-ev-sub">${esc(sub)}</div>` : ""}
           </div>
-          <span style="font-size:11px;color:var(--muted)">${esc(ev.cal)}</span>
         </div>`;
       }
     }
-    html += `</div>`;
+    html += `<div class="cal-end">Sem mais eventos ${span}</div></div></div>`;
     pageEls.calendar.innerHTML = html;
-  }
-
-  function renderNetwork() {
-    const n = state.net;
-    if (!n) {
-      pageEls.network.innerHTML = `<div class="card" style="height:100%"><div class="empty-state">Aguardando dados de internet...</div></div>`;
-      return;
-    }
-    const lat = n.latency_ms != null ? `${n.latency_ms} ms` : "--";
-    const jit = n.jitter_ms != null ? `${n.jitter_ms} ms` : "--";
-    const hist = n.hist || [];
-    const maxPing = Math.max(60, ...hist.filter((x) => x > 0));
-
-    pageEls.network.innerHTML = `<div class="net-layout">
-      <div class="card chart-card">
-        <div class="card-title">
-          <span>Latência (60s)</span>
-          <span class="badge ${n.online ? "badge-online" : "badge-offline"}">${n.online ? "Online" : "Offline"}</span>
-        </div>
-        <div class="net-metrics">
-          <div class="kv-box"><div class="kv-lbl">Ping</div><div class="kv-val" style="color:var(--cyan)">${lat}</div></div>
-          <div class="kv-box"><div class="kv-lbl">Jitter</div><div class="kv-val">${jit}</div></div>
-          <div class="kv-box"><div class="kv-lbl">Perda</div><div class="kv-val" style="color:${n.loss_pct ? "var(--red)" : "var(--green)"}">${n.loss_pct}%</div></div>
-        </div>
-        <div class="chart-wrap"><canvas id="net-chart"></canvas></div>
-      </div>
-
-      <div class="net-side">
-        <div class="card">
-          <div class="card-title"><span>Tráfego</span></div>
-          <div class="stats-details">
-            <div class="kv-box"><div class="kv-lbl">Hoje</div><div class="kv-val">${fmtBytes(n.today_bytes)}</div></div>
-            <div class="kv-box"><div class="kv-lbl">Mês</div><div class="kv-val">${fmtBytes(n.month_bytes)}</div></div>
-          </div>
-        </div>
-
-        <div class="card" style="flex:1;justify-content:space-between">
-          <div class="card-title"><span>Speedtest</span></div>
-          <div class="stats-details">
-            <div class="kv-box"><div class="kv-lbl">Down</div><div class="kv-val" style="color:var(--cyan)">${n.speed ? `${n.speed.down_mbps} Mbps` : "--"}</div></div>
-            <div class="kv-box"><div class="kv-lbl">Up</div><div class="kv-val" style="color:var(--green)">${n.speed ? `${n.speed.up_mbps} Mbps` : "--"}</div></div>
-          </div>
-          <button id="btn-speedtest" class="btn-primary" type="button" ${n.testing ? "disabled" : ""}>
-            ${n.testing ? "Testando..." : "Rodar Speedtest"}
-          </button>
-        </div>
-      </div>
-    </div>`;
-
-    drawLineChart(pageEls.network.querySelector("#net-chart"), [{ data: hist, color: "#38bdf8" }], maxPing);
-    const btn = pageEls.network.querySelector("#btn-speedtest");
-    if (btn) {
-      btn.addEventListener("click", () => sendCmd({ type: "speedtest" }));
-    }
   }
 
   function renderGames() {
     const st = state.steam;
-    if (!st) {
-      pageEls.games.innerHTML = `<div class="card" style="height:100%"><div class="empty-state">Steam não detectada.</div></div>`;
-      return;
+    const p = st?.playing;
+    const friends = st?.friends || [];
+    const recent = (st?.recent || []).slice(0, 5);
+
+    let topHtml = "";
+    if (p) {
+      const heroImg = state.steamImgs[`${p.appid}_0`] || "";
+      const sessSec = currentGameSessionSec();
+      const sessTxt = sessSec >= 3600
+        ? `Jogando há ${Math.floor(sessSec / 3600)}h ${String(Math.floor((sessSec % 3600) / 60)).padStart(2, "0")}m`
+        : `Jogando há ${Math.floor(sessSec / 60)}m`;
+      const metaParts = [];
+      if (p.total_min > 0 && p.total_min * 60 >= sessSec + 600) {
+        metaParts.push(`${fmtPlaytime(p.total_min)} jogadas`);
+      }
+      if (friends.length) {
+        metaParts.push(`${friends.length} ${friends.length === 1 ? "amigo jogando" : "amigos jogando"}`);
+      }
+      topHtml = `<div class="game-now-row">
+        ${heroImg ? `<img class="game-hero" src="${heroImg}" alt="">` : `<div class="game-hero"></div>`}
+        <div class="game-now-info">
+          <div class="caption" style="color:var(--good)">JOGANDO AGORA</div>
+          <div class="game-now-title">${esc(p.name)}</div>
+          <div id="game-now-session" class="game-now-session">${esc(sessTxt)}</div>
+          <div class="game-now-total">${esc(metaParts.join("  •  "))}</div>
+        </div>
+      </div>`;
+    } else {
+      const idleSub = !st
+        ? (state.pcOnline ? "Aguardando o PC" : "PC offline")
+        : !st.found
+          ? "Steam não encontrada no PC"
+          : "Inicie um jogo ou escolha abaixo";
+      const friendsHtml = friends.length
+        ? `<div class="game-friends">
+             <div class="caption">AMIGOS JOGANDO</div>
+             ${friends.slice(0, 4).map((f) => `<div class="friend-row"><span class="friend-name">${esc(f.name)}</span><span class="friend-game">${esc(f.game)}</span></div>`).join("")}
+           </div>`
+        : "";
+      topHtml = `<div class="game-idle-row">
+        <div class="game-idle-left">
+          ${iconMi("sports_esports")}
+          <div>
+            <div class="game-now-title">Nenhum jogo aberto</div>
+            <div class="game-now-total" style="margin-top:4px">${esc(idleSub)}</div>
+          </div>
+        </div>
+        ${friendsHtml}
+      </div>`;
     }
-    const p = st.playing;
-    const heroImg = p ? state.steamImgs[`${p.appid}_0`] : "";
 
-    pageEls.games.innerHTML = `<div class="games-layout">
-      <div class="card">
-        <div class="card-title"><span>Jogando agora</span></div>
-        ${
-          p
-            ? `${heroImg ? `<img class="game-hero" src="${heroImg}" alt="">` : ""}
-               <div style="font-size:18px;font-weight:800">${esc(p.name)}</div>
-               <div style="font-size:12px;color:var(--muted);margin-top:4px">Sessão: ${fmtTime(p.session_s)} • Total: ${(p.total_min / 60).toFixed(1)} h</div>`
-            : `<div class="empty-state">Nenhum jogo em execução</div>`
-        }
-      </div>
-
-      <div class="card">
-        <div class="card-title"><span>Recentes (toque para abrir)</span></div>
-        <div class="recent-games">${(st.recent || [])
+    const recentBody = recent.length
+      ? `<div class="recent-grid">${recent
           .map((g) => {
             const thumb = state.steamImgs[`${g.appid}_2`] || state.steamImgs[`${g.appid}_1`] || "";
-            return `<div class="game-row" data-appid="${g.appid}">
-              ${thumb ? `<img class="game-thumb" src="${thumb}" alt="">` : `<div class="game-thumb"></div>`}
-              <div style="min-width:0;flex:1">
-                <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(g.name)}</div>
-                <div style="font-size:11px;color:var(--muted)">${(g.total_min / 60).toFixed(1)} h jogadas</div>
+            return `<div class="game-tile" data-appid="${g.appid}">
+              <div class="game-poster-box">
+                ${thumb ? `<img src="${thumb}" alt="">` : iconMi("sports_esports")}
+                ${g.total_min > 0 ? `<span class="game-hours-pill">${esc(fmtPlaytime(g.total_min))}</span>` : ""}
               </div>
+              <div class="game-tile-name">${esc(g.name)}</div>
             </div>`;
           })
-          .join("")}</div>
+          .join("")}</div>`
+      : `<div class="empty-state">${st?.found ? "Sem jogos recentes" : ""}</div>`;
+
+    pageEls.games.innerHTML = `<div class="games-layout">
+      <div class="card games-top-card">${topHtml}</div>
+      <div class="card games-recent-card">
+        <div class="caption">RECENTES  •  TOQUE PARA JOGAR</div>
+        ${recentBody}
       </div>
     </div>`;
 
-    pageEls.games.querySelectorAll("[data-appid]").forEach((row) => {
-      row.addEventListener("click", () => {
-        sendCmd({ type: "steam_launch", appid: Number(row.dataset.appid) });
+    pageEls.games.querySelectorAll("[data-appid]").forEach((tile) => {
+      tile.addEventListener("click", () => {
+        sendCmd({ type: "steam_launch", appid: Number(tile.dataset.appid) });
       });
     });
   }
 
   function triggerAlarm() {
+    const mins = Math.floor(state.timer.totalSec / 60);
+    els.alarmSub.textContent = state.timer.totalSec % 60 === 0
+      ? `Timer de ${mins} ${mins === 1 ? "minuto" : "minutos"}`
+      : `Timer de ${state.timer.totalSec} segundos`;
     els.timerAlarm.classList.remove("hidden");
     try {
       const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -937,6 +1442,15 @@
     }
   }
 
+  els.btnAlarmAgain.addEventListener("click", () => {
+    els.timerAlarm.classList.add("hidden");
+    state.timer.remainSec = state.timer.totalSec;
+    state.timer.state = "running";
+    state.timer.lastTick = Date.now();
+    renderNav();
+    if (state.activePage === "timer") renderTimer();
+  });
+
   els.btnAlarmOk.addEventListener("click", () => {
     els.timerAlarm.classList.add("hidden");
   });
@@ -944,23 +1458,51 @@
   function renderTimer() {
     const t = state.timer;
     const presets = [1, 5, 10, 15, 25, 45];
-    pageEls.timer.innerHTML = `<div class="card timer-layout">
-      <div class="timer-display">${fmtTime(t.remainSec)}</div>
-      <div class="timer-presets">${presets
-        .map((m) => `<button class="btn-secondary" data-preset="${m}" type="button">${m} min</button>`)
-        .join("")}</div>
-      <div class="timer-actions">
-        <button id="btn-timer-toggle" class="btn-primary" type="button">${t.running ? "Pausar" : "Iniciar"}</button>
-        <button id="btn-timer-reset" class="btn-secondary" type="button">Zerar</button>
+    const r = 134;
+    const C = 2 * Math.PI * r;
+    const frac = t.totalSec > 0 ? Math.max(0, Math.min(1, t.remainSec / t.totalSec)) : 0;
+    const statusTxt = t.state === "running" ? "Rodando" : t.state === "paused" ? "Pausado" : "Pronto";
+
+    pageEls.timer.innerHTML = `<div class="timer-layout">
+      <div class="card timer-ring-card">
+        <div class="timer-ring-box">
+          <svg class="timer-svg" viewBox="0 0 300 300" aria-hidden="true">
+            <circle cx="150" cy="150" r="${r}" fill="none" stroke="var(--card-hi)" stroke-width="16"/>
+            <circle id="timer-arc-ind" cx="150" cy="150" r="${r}" fill="none" stroke="var(--accent)"
+              stroke-width="16" stroke-linecap="round"
+              stroke-dasharray="${(frac * C).toFixed(2)} ${C.toFixed(2)}"
+              style="stroke-opacity:${frac > 0 ? 1 : 0}"
+              transform="rotate(-90 150 150)"/>
+          </svg>
+          <div class="timer-center-text">
+            <div id="timer-disp" class="timer-display">${fmtDuration(t.remainSec)}</div>
+            <div id="timer-stat" class="timer-status">${statusTxt}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card timer-ctrl-card">
+        <div class="caption">MINUTOS</div>
+        <div class="timer-presets">${presets
+          .map((m) => {
+            const sel = m * 60 === t.totalSec ? "selected" : "";
+            return `<button class="timer-preset-btn ${sel}" data-preset="${m}" type="button">${m}</button>`;
+          })
+          .join("")}</div>
+        <div class="timer-actions">
+          <button id="btn-timer-reset" class="round-btn timer-reset-btn" type="button" title="Zerar">${iconMi("replay")}</button>
+          <button id="btn-timer-toggle" class="timer-go-btn" type="button" title="Iniciar/Pausar">${iconMi(t.state === "running" ? "pause" : "play_arrow")}</button>
+        </div>
       </div>
     </div>`;
 
     pageEls.timer.querySelectorAll("[data-preset]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const sec = Number(btn.dataset.preset) * 60;
+        const wasRunning = t.state === "running";
         t.totalSec = sec;
         t.remainSec = sec;
-        t.running = true;
+        t.state = wasRunning ? "running" : "idle";
         t.lastTick = Date.now();
         renderNav();
         renderTimer();
@@ -968,15 +1510,19 @@
     });
 
     pageEls.timer.querySelector("#btn-timer-toggle").addEventListener("click", () => {
-      if (t.remainSec <= 0) t.remainSec = t.totalSec;
-      t.running = !t.running;
-      t.lastTick = Date.now();
+      if (t.state === "running") {
+        t.state = "paused";
+      } else {
+        if (t.remainSec <= 0) t.remainSec = t.totalSec;
+        t.state = "running";
+        t.lastTick = Date.now();
+      }
       renderNav();
       renderTimer();
     });
 
     pageEls.timer.querySelector("#btn-timer-reset").addEventListener("click", () => {
-      t.running = false;
+      t.state = "idle";
       t.remainSec = t.totalSec;
       renderNav();
       renderTimer();
@@ -1005,6 +1551,13 @@
     );
   }
 
+  function updateFullscreenIcon() {
+    const fs = Boolean(document.fullscreenElement);
+    els.btnFullscreen.classList.toggle("on", fs);
+    const ico = els.btnFullscreen.querySelector(".mi");
+    if (ico) ico.textContent = fs ? MI.fullscreen_exit : MI.fullscreen;
+  }
+
   els.btnFullscreen.addEventListener("click", async () => {
     try {
       if (!document.fullscreenElement) {
@@ -1019,11 +1572,16 @@
       // Ignore if unsupported
     }
   });
+  document.addEventListener("fullscreenchange", updateFullscreenIcon);
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible") {
       enableNoSleep();
     }
+  });
+
+  window.addEventListener("resize", () => {
+    if (state.activePage === "stats") renderStats();
   });
 
   // ---- WebSocket Client ----
@@ -1033,13 +1591,19 @@
         state.pcOnline = Boolean(msg.pc_online);
         if (!state.pcOnline) state.pcAsleep = false;
         updateStatusUi();
+        renderActivePage();
         break;
       case "layout":
         state.layout = msg;
+        if (msg.nav && ["left", "right", "bottom"].includes(msg.nav)) {
+          els.app.dataset.nav = msg.nav;
+        }
         renderNav();
+        if (state.activePage === "stats") renderStats();
         break;
       case "home":
         state.home = msg;
+        renderNav();
         if (state.activePage === "home") renderHome();
         break;
       case "pc_power":
@@ -1055,14 +1619,28 @@
           if (state.statsHist.gpu.length > 60) state.statsHist.gpu.shift();
         }
         if (state.activePage === "home") renderHome();
-        if (state.activePage === "stats") renderStats();
+        if (state.activePage === "stats") {
+          if (state.statsView === "internet") {
+            const liveEl = pageEls.stats.querySelector(".net-now-live");
+            if (liveEl) {
+              const d = ((msg.net_down || 0) * 8.192 / 1000).toFixed(1);
+              const u = ((msg.net_up || 0) * 8.192 / 1000).toFixed(1);
+              liveEl.textContent = state.pcOnline ? `Agora ↓ ${d}  ↑ ${u} Mbps` : "";
+            }
+          } else {
+            renderStats();
+          }
+        }
         break;
       case "media":
         state.media = msg;
         state.mediaUpdatedAt = Date.now();
         if (!msg.active || !msg.art_id) state.latestArtUrl = "";
         if (state.activePage === "home") renderHome();
-        if (state.activePage === "media") renderMedia();
+        if (state.activePage === "media") {
+          const slider = pageEls.media.querySelector("#media-seek");
+          if (!slider || !slider.matches(":active")) renderMedia();
+        }
         break;
       case "art_image":
         state.artById[msg.art_id] = msg.data_url;
@@ -1081,6 +1659,7 @@
       case "events":
         state.events = msg.events || [];
         state.eventsDays = Number(msg.days || 7);
+        renderNav();
         if (state.activePage === "home") renderHome();
         if (state.activePage === "calendar") renderCalendar();
         break;
@@ -1092,16 +1671,18 @@
       case "net":
         state.net = msg;
         if (state.activePage === "home") renderHome();
-        if (state.activePage === "network") renderNetwork();
+        if (state.activePage === "stats" && state.statsView === "internet") renderStats();
         break;
       case "steam":
         state.steam = msg;
+        state.steamUpdatedAt = Date.now();
         renderNav();
         if (state.activePage === "home") renderHome();
         if (state.activePage === "games") renderGames();
         break;
       case "steam_image":
         state.steamImgs[`${msg.appid}_${msg.kind}`] = msg.data_url;
+        if (state.activePage === "home") renderHome();
         if (state.activePage === "games") renderGames();
         break;
     }

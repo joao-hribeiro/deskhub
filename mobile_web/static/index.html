@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0d0f14">
+  <meta name="theme-color" content="#0d0e11">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Desk Hub</title>
@@ -12,50 +12,43 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <div id="app" class="app-shell">
+  <div id="app" class="app-shell" data-nav="left">
     <aside id="nav-rail" class="nav-rail" aria-label="Navegação">
-      <div class="nav-status" id="nav-status" title="Status da conexão">
-        <span class="status-dot offline" id="status-dot"></span>
-      </div>
       <nav id="nav-items" class="nav-items"></nav>
       <div class="nav-footer">
         <button id="btn-fullscreen" class="nav-btn util-btn" type="button" title="Tela cheia">
-          <span class="nav-ico" data-icon="fullscreen"></span>
+          <span class="mi">&#xe5d0;</span>
         </button>
+        <div id="nav-status" class="nav-status" title="Status da conexão">
+          <span id="status-pc" class="mi status-ico dim" title="PC">&#xe30c;</span>
+          <span id="status-wifi" class="mi status-ico bad" title="Conexão">&#xe648;</span>
+        </div>
       </div>
     </aside>
 
     <main id="main-area" class="main-area">
-      <header id="top-bar" class="top-bar">
-        <div class="top-clock-group">
-          <span id="hdr-time" class="hdr-time">--:--</span>
-          <span id="hdr-date" class="hdr-date">---</span>
-        </div>
-        <div class="top-meta">
-          <span id="hdr-page-title" class="hdr-page-title">Home</span>
-          <span id="hdr-pc-badge" class="badge badge-offline">PC offline</span>
-        </div>
-      </header>
-
       <section id="page-container" class="page-container"></section>
     </main>
   </div>
 
-  <!-- Sleep / Night Dim Overlay -->
+  <!-- Sleep / Night Dim Overlay (ui_saver.c) -->
   <div id="sleep-overlay" class="sleep-overlay hidden" role="button" tabindex="0">
     <div id="sleep-clock-box" class="sleep-clock-box">
       <div id="sleep-time" class="sleep-time">--:--</div>
-      <div id="sleep-date" class="sleep-date">---</div>
-      <div class="sleep-hint">Toque para acender</div>
+      <div id="sleep-date" class="sleep-date"></div>
     </div>
   </div>
 
-  <!-- Timer Alarm Overlay -->
+  <!-- Timer Alarm Overlay (ui_timer.c build_done) -->
   <div id="timer-alarm" class="timer-alarm hidden">
     <div class="alarm-card">
-      <div class="alarm-title">Tempo esgotado!</div>
-      <div id="alarm-sub" class="alarm-sub">Timer concluído</div>
-      <button id="btn-alarm-ok" class="btn-primary alarm-btn" type="button">OK</button>
+      <span class="mi alarm-icon">&#xe425;</span>
+      <div class="alarm-title">Tempo esgotado</div>
+      <div id="alarm-sub" class="alarm-sub">Timer de 25 minutos</div>
+      <div class="alarm-actions">
+        <button id="btn-alarm-again" class="pill-btn pill-muted" type="button">Repetir</button>
+        <button id="btn-alarm-ok" class="pill-btn pill-accent" type="button">Concluir</button>
+      </div>
     </div>
   </div>
 
